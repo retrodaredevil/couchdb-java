@@ -10,11 +10,20 @@ buildscript {
         // retrofit is why we need allow-opens. context: https://stackoverflow.com/questions/60915381/retrofit2-maven-project-illegal-reflective-access-warning // https://github.com/square/retrofit/issues/3341
         retrofitVersion = "2.9.0" // https://github.com/square/retrofit/releases
         okhttpVersion = "4.9.1" // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+        dockerComposePluginVersion = "0.14.3"
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.avast.gradle:gradle-docker-compose-plugin:$dockerComposePluginVersion"
     }
 }
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'docker-compose'
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     repositories {
@@ -42,6 +51,15 @@ subprojects {
         tasks.withType(JavaCompile){
             options.compilerArgs << "-Xlint:deprecation"
         }
+    }
+    task integration(type: Test) {
+        useJUnitPlatform {
+            includeTags 'integration'
+        }
+    }
+    dockerCompose {
+        useComposeFiles = ['../testing/couchdb-compose.yml']
+        isRequiredBy integration
     }
 }
 
