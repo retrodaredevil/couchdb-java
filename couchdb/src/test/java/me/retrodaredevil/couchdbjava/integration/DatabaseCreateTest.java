@@ -15,8 +15,11 @@ import me.retrodaredevil.couchdbjava.response.DocumentResponse;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,20 +43,22 @@ public class DatabaseCreateTest {
 		assertFalse(instance.getAllDatabaseNames().contains("test_database"));
 		CouchDbDatabase database = instance.getDatabase("test_database");
 		database.create();
+
 		DocumentResponse response = database.postNewDocument(new StringJsonData("{\"test\": 43}"));
 		String id = response.getId();
 		String expectedRev = response.getRev();
+
 		DocumentData document = database.getDocument(id);
 		assertEquals(expectedRev, document.getRevision());
 		JsonData jsonData = document.getJsonData();
 		JsonNode node = CouchDbJacksonUtil.getNodeFrom(jsonData);
 		ObjectNode objectNode = (ObjectNode) node;
-		Set<String> fieldNames = new HashSet<>();
-		objectNode.fieldNames().forEachRemaining(fieldNames::add);
-		assertEquals(3, fieldNames.size(), "Unexpected field names: " + fieldNames);
-		assertTrue(fieldNames.contains("test"));
-		assertTrue(fieldNames.contains("_id"));
-		assertTrue(fieldNames.contains("_rev"));
+		@SuppressWarnings("NullableProblems")
+		Set<String> fieldNames = StreamSupport.stream(((Iterable<String>) (objectNode::fieldNames)).spliterator(), false)
+				.collect(Collectors.toSet());
+		assertEquals(new HashSet<>(Arrays.asList("_id", "_rev", "test")), fieldNames);
 		assertEquals(43, objectNode.get("test").numberValue().intValue());
+		assertEquals(id, objectNode.get("_id").asText());
+		assertEquals(expectedRev, objectNode.get("_rev").asText());
 	}
 }
