@@ -1,0 +1,49 @@
+
+buildscript {
+    ext {
+        junit5Version = '5.7.2' // https://junit.org/junit5/
+        junit5PlatformVersion = '1.7.2'
+
+        slf4jVersion = '1.7.30' // http://www.slf4j.org/download.html
+        // https://github.com/FasterXML/jackson/wiki/Jackson-Releases
+        jacksonVersion = '2.12.3' // https://github.com/FasterXML/jackson-databind/releases
+        // retrofit is why we need allow-opens. context: https://stackoverflow.com/questions/60915381/retrofit2-maven-project-illegal-reflective-access-warning // https://github.com/square/retrofit/issues/3341
+        retrofitVersion = "2.9.0" // https://github.com/square/retrofit/releases
+        okhttpVersion = "4.9.1" // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    repositories {
+        maven { url "https://repo.maven.apache.org/maven2" }
+    }
+    dependencies {
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junit5Version
+        testImplementation "org.junit.jupiter:junit-jupiter-params:$junit5Version"
+        testImplementation "org.junit.platform:junit-platform-commons:$junit5PlatformVersion"
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: junit5Version
+
+        // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+        implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    }
+    test {
+        useJUnitPlatform()
+        if(JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+            // If we don't have this, we get warnings for something about retrofit2.Platform
+            jvmArgs "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED"
+        }
+    }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile){
+            options.compilerArgs << "-Xlint:deprecation"
+        }
+    }
+}
+
+wrapper {
+    gradleVersion = '6.9'
+    distributionType = Wrapper.DistributionType.ALL
+}
