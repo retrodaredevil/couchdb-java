@@ -37,12 +37,16 @@ public class DatabaseCreateTest {
 	# Then log out and back in, I can't get this command below to work:
 	exec su -l $USER
 	 */
+
+	private static final String DATABASE = "test_create_database";
+
 	@Test
 	void test() throws CouchDbException, JsonProcessingException {
 		CouchDbInstance instance = TestUtil.createInstance();
-		assertFalse(instance.getAllDatabaseNames().contains("test_database"));
-		CouchDbDatabase database = instance.getDatabase("test_database");
+		assertFalse(instance.getAllDatabaseNames().contains(DATABASE));
+		CouchDbDatabase database = instance.getDatabase(DATABASE);
 		database.create();
+		assertTrue(instance.getAllDatabaseNames().contains(DATABASE));
 
 		DocumentResponse response = database.postNewDocument(new StringJsonData("{\"test\": 43}"));
 		String id = response.getId();

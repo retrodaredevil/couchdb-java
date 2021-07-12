@@ -1,11 +1,11 @@
 package me.retrodaredevil.couchdbjava.json.jackson;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.node.NullNode;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 
 import java.io.IOException;
@@ -16,7 +16,6 @@ import static java.util.Objects.requireNonNull;
 public class JacksonJsonData implements JsonData {
 	private final JsonNode node;
 
-	@JsonCreator
 	public JacksonJsonData(JsonNode node) {
 		requireNonNull(this.node = node);
 	}
@@ -39,6 +38,10 @@ public class JacksonJsonData implements JsonData {
 		public JacksonJsonData deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
 			JsonNode node = p.readValueAs(JsonNode.class);
 			return new JacksonJsonData(node);
+		}
+		@Override
+		public JacksonJsonData getNullValue(DeserializationContext ctxt) throws JsonMappingException {
+			return new JacksonJsonData(NullNode.getInstance());
 		}
 	}
 	public static class Serializer extends JsonSerializer<JacksonJsonData> {

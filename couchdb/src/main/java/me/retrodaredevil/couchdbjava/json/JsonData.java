@@ -6,7 +6,7 @@ import me.retrodaredevil.couchdbjava.json.jackson.JacksonJsonData;
 /**
  * Represents unparsed JSON data. Some implementations may have already parsed it.
  */
-@JsonDeserialize(as = JacksonJsonData.class)
+@JsonDeserialize(using = JacksonJsonData.Deserializer.class)
 public interface JsonData {
 	String getJson();
 

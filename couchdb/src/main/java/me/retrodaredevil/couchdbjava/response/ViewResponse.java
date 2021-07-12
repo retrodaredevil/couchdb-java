@@ -65,14 +65,18 @@ public class ViewResponse {
 		private final JsonData keyJson;
 		private final JsonData valueJson;
 
+		private final JsonData doc;
+
 		@JsonCreator
 		public DocumentEntry(
 				@JsonProperty(value = "id", required = true) String id,
 				@JsonProperty(value = "key", required = true) JsonData keyJson,
-				@JsonProperty(value = "value", required = true) JsonData valueJson) {
+				@JsonProperty(value = "value", required = true) JsonData valueJson,
+				@JsonProperty("doc") JsonData doc) {
 			requireNonNull(this.id = id);
 			requireNonNull(this.keyJson = keyJson);
 			requireNonNull(this.valueJson = valueJson);
+			this.doc = doc;
 		}
 
 		@JsonProperty("id")
@@ -88,6 +92,16 @@ public class ViewResponse {
 		@JsonProperty("value")
 		public JsonData getValue() {
 			return valueJson;
+		}
+
+		/**
+		 * Note this is non-null only if {@link me.retrodaredevil.couchdbjava.request.ViewQueryParamsBuilder#includeDocs(Boolean)} was set
+		 * @return The document this entry was emitted from.
+		 */
+		@JsonInclude(JsonInclude.Include.NON_NULL)
+		@JsonProperty("doc")
+		public JsonData getDoc() {
+			return doc;
 		}
 	}
 }
