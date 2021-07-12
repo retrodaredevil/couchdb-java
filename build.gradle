@@ -56,6 +56,10 @@ subprojects {
         useJUnitPlatform {
             includeTags 'integration'
         }
+        if(JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+            // If we don't have this, we get warnings for something about retrofit2.Platform
+            jvmArgs "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED"
+        }
     }
     dockerCompose {
         useComposeFiles = ['../testing/couchdb-compose.yml']
