@@ -1,5 +1,8 @@
 package me.retrodaredevil.couchdbjava;
 
+import me.retrodaredevil.couchdbjava.attachment.Attachment;
+import me.retrodaredevil.couchdbjava.attachment.AttachmentGet;
+import me.retrodaredevil.couchdbjava.attachment.AttachmentInfo;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.option.DatabaseCreationOption;
@@ -9,6 +12,8 @@ import me.retrodaredevil.couchdbjava.request.ViewQuery;
 import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
 import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -72,5 +77,8 @@ public interface CouchDbDatabase {
 
 	BulkGetResponse getDocumentsBulk(BulkGetRequest request) throws CouchDbException;
 	List<BulkDocumentResponse> postDocumentsBulk(BulkPostRequest request) throws CouchDbException;
+
+	@NotNull AttachmentInfo getAttachmentInfo(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
+	@NotNull Attachment getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
 
 }

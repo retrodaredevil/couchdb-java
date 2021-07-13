@@ -2,6 +2,12 @@ package me.retrodaredevil.couchdbjava.okhttp;
 
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbStatusCode;
+import me.retrodaredevil.couchdbjava.CouchDbUtil;
+import me.retrodaredevil.couchdbjava.attachment.AcceptRange;
+import me.retrodaredevil.couchdbjava.attachment.Attachment;
+import me.retrodaredevil.couchdbjava.attachment.AttachmentGet;
+import me.retrodaredevil.couchdbjava.attachment.AttachmentInfo;
+import me.retrodaredevil.couchdbjava.attachment.ContentEncoding;
 import me.retrodaredevil.couchdbjava.request.BulkGetRequest;
 import me.retrodaredevil.couchdbjava.request.BulkPostRequest;
 import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
@@ -14,6 +20,8 @@ import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
 import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
@@ -26,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static me.retrodaredevil.couchdbjava.CouchDbUtil.*;
 
 public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	private static final String DATABASE_REGEX = "^[a-z][a-z0-9_$()+/-]*$";
@@ -49,20 +58,6 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 				;
 //		System.out.println(retrofit.baseUrl());
 		service = retrofit.create(CouchDbDatabaseService.class);
-	}
-	private static String encodeDocumentId(String documentId) {
-		if (documentId.startsWith("_design/")) {
-			return "_design/" + encodeDocumentId(documentId.substring("_design/".length()));
-		}
-		try {
-			return URLEncoder.encode(documentId, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException("Could not encode: '" + documentId + "'.", e);
-		}
-	}
-	private static String encodeRevisionForHeader(String revision) {
-		requireNonNull(revision);
-		return '"' + revision + '"';
 	}
 	private HttpUrl.Builder createUrlBuilder() {
 		return instance.createUrlBuilder().addPathSegment(name);
@@ -201,7 +196,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		if (revision.length() < 36) { // minimum length of a revision is 34, plus two for the two double quotes
 			throw new CouchDbException("Revision length is too small! revision: " + revision);
 		}
-		return revision.substring(1, revision.length() - 1); // trim off the double quotes
+		return CouchDbUtil.trimDoubleQuotes(revision); // trim off the double quotes
 	}
 
 	@Override
@@ -258,4 +253,68 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		instance.preAuthorize();
 		return instance.executeAndHandle(service.postDocumentsBulk(request));
 	}
+
+	// region attachment
+	private AttachmentInfo parseAttachmentInfo(Response response) {
+		if (!response.isSuccessful()) {
+			throw new IllegalStateException("response must be successful to use this method!");
+		}
+		AcceptRange acceptRange = AcceptRange.createFromValue(requireNonNull(response.header("Accept-Ranges"), "Accept-Ranges not present"));
+		ContentEncoding contentEncoding = ContentEncoding.fromName(requireNonNull(response.header("Content-Encoding"), "Content-Encoding not present"));
+		int contentLength = Integer.parseInt(requireNonNull(response.header("Content-Length"), "Content-Length not present"));
+		String base64EncodedDigest = CouchDbUtil.trimDoubleQuotes(requireNonNull(response.header("ETag"), "ETag not present"));
+		return new AttachmentInfo(acceptRange, contentEncoding, contentLength, base64EncodedDigest);
+	}
+
+	private Response doAttachmentRequest(AttachmentGet attachmentGet, boolean head) throws CouchDbException {
+		String documentId = attachmentGet.getDocumentId();
+		String attachmentName = attachmentGet.getAttachmentName();
+		String attachmentDigest = attachmentGet.getAttachmentDigest();
+		String documentRevision = attachmentGet.getDocumentRevision();
+		instance.preAuthorize();
+		Request.Builder builder = new Request.Builder()
+				.url(
+						createUrlBuilder()
+								.addEncodedPathSegments(encodeDocumentId(documentId))
+								.addEncodedPathSegments(encodeAttachmentName(attachmentName))
+								.build()
+				);
+		if (head) {
+			builder.head();
+		}
+		if (attachmentDigest != null) {
+			builder.header("If-None-Match", attachmentDigest);
+		}
+		if (documentRevision != null) {
+			builder.header("If-Match", documentRevision);
+		}
+		return instance.executeCall(instance.getClient().newCall(builder.build()));
+	}
+
+	@Override
+	public @NotNull AttachmentInfo getAttachmentInfo(@NotNull AttachmentGet attachmentGet) throws CouchDbException {
+		Response response = doAttachmentRequest(attachmentGet, true);
+		if (response.isSuccessful()) {
+			return parseAttachmentInfo(response);
+		}
+		throw OkHttpUtil.createExceptionFromResponse(response);
+	}
+
+	@Override
+	public @NotNull Attachment getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException {
+		Response response = doAttachmentRequest(attachmentGet, false);
+		if (response.isSuccessful()) {
+			AttachmentInfo info = parseAttachmentInfo(response);
+			final byte[] bytes;
+			try {
+				bytes = requireNonNull(response.body()).bytes();
+			} catch (IOException e) {
+				throw new CouchDbException("Couldn't read all bytes", e);
+			}
+			return new Attachment(info, bytes);
+		}
+		throw OkHttpUtil.createExceptionFromResponse(response);
+
+	}
+	// endregion
 }

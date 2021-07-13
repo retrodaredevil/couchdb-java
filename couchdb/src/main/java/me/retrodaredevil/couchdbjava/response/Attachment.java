@@ -3,6 +3,7 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -38,13 +39,13 @@ public class Attachment {
 	}
 
 	@JsonProperty("content_type")
-	public String getContentType() {
+	public @NotNull String getContentType() {
 		return contentType;
 	}
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("data")
-	public byte[] getData() {
+	public @Nullable byte[] getData() {
 		return data;
 	}
 

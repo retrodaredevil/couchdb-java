@@ -3,8 +3,8 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -47,8 +47,8 @@ public class SessionGetResponse {
 
 		@JsonCreator
 		public Info(
-				@JsonProperty("authenticated") String authenticated,
-				@JsonProperty("authentication_db") String authenticationDatabase,
+				@JsonProperty("authenticated") @Nullable String authenticated,
+				@JsonProperty("authentication_db") @Nullable String authenticationDatabase,
 				@JsonProperty(value = "authentication_handlers", required = true) List<String> authenticationHandlers) {
 			this.authenticated = authenticated;
 			this.authenticationDatabase = authenticationDatabase;
