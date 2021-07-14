@@ -5,7 +5,11 @@ import me.retrodaredevil.couchdbjava.request.BulkPostRequest;
 import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
 import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
+import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okio.Source;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -73,4 +77,19 @@ public interface CouchDbDatabaseService {
 
 	@POST("_bulk_docs")
 	Call<List<BulkDocumentResponse>> postDocumentsBulk(@Body BulkPostRequest request);
+
+	@PUT("{docid}/{attachment}")
+	Call<DocumentResponse> putAttachment(
+			@Path(value = "docid", encoded = true) String docid,
+			@Path(value = "attachment", encoded = true) String attachment,
+			@Header("If-Match") String revision,
+			@Body RequestBody body
+	);
+	@DELETE("{docid}/{attachment}")
+	Call<DocumentResponse> deleteAttachment(
+			@Path(value = "docid", encoded = true) String docid,
+			@Path(value = "attachment", encoded = true) String attachment,
+			@Header("If-Match") String revision,
+			@Query("batch") String batch
+	);
 }

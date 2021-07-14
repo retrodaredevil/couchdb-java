@@ -3,7 +3,8 @@ A CouchDB Java library that is (mostly) uncoupled from any particular JSON libra
 
 There are many outdated CouchDB libraries, and some more up to date CouchDB libraries for Java. Some of these
 libraries are tightly coupled to JSON libraries such as GSON or Jackson. This library uses Jackson internally,
-but you can interact with this library using strings representing JSON values.
+but you can interact with this library using strings representing JSON values. The only library this library is tightly
+coupled to is [Okio](https://github.com/square/okio), which is used in place of InputStreams in some places
 
 This library encourages the use of immutable objects as much as possible and doesn't force you to put `_id` and `_rev`
 on your objects like many other libraries do.

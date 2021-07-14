@@ -1,6 +1,6 @@
 package me.retrodaredevil.couchdbjava;
 
-import me.retrodaredevil.couchdbjava.attachment.Attachment;
+import me.retrodaredevil.couchdbjava.attachment.AttachmentData;
 import me.retrodaredevil.couchdbjava.attachment.AttachmentGet;
 import me.retrodaredevil.couchdbjava.attachment.AttachmentInfo;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
@@ -12,9 +12,11 @@ import me.retrodaredevil.couchdbjava.request.ViewQuery;
 import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
 import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
+import okio.Source;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface CouchDbDatabase {
@@ -79,6 +81,22 @@ public interface CouchDbDatabase {
 	List<BulkDocumentResponse> postDocumentsBulk(BulkPostRequest request) throws CouchDbException;
 
 	@NotNull AttachmentInfo getAttachmentInfo(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
-	@NotNull Attachment getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
+	@NotNull AttachmentData getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
+
+	@NotNull DocumentResponse putAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String documentRevision, @Nullable String contentType) throws CouchDbException;
+	default @NotNull DocumentResponse putAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String documentRevision) throws CouchDbException {
+		return putAttachment(documentId, attachmentName, dataSource, documentRevision, null);
+	}
+	default @NotNull DocumentResponse putAttachmentOnNewDocument(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource) throws CouchDbException {
+		return putAttachment(documentId, attachmentName, dataSource, null, null);
+	}
+	default @NotNull DocumentResponse putAttachmentOnNewDocument(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String contentType) throws CouchDbException {
+		return putAttachment(documentId, attachmentName, dataSource, null, contentType);
+	}
+
+	@NotNull DocumentResponse deleteAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull String documentRevision, boolean batch) throws CouchDbException;
+	default @NotNull DocumentResponse deleteAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull String documentRevision) throws CouchDbException {
+		return deleteAttachment(documentId, attachmentName, documentRevision, false);
+	}
 
 }

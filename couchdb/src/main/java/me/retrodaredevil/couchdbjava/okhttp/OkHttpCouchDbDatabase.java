@@ -4,7 +4,7 @@ import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbStatusCode;
 import me.retrodaredevil.couchdbjava.CouchDbUtil;
 import me.retrodaredevil.couchdbjava.attachment.AcceptRange;
-import me.retrodaredevil.couchdbjava.attachment.Attachment;
+import me.retrodaredevil.couchdbjava.attachment.AttachmentData;
 import me.retrodaredevil.couchdbjava.attachment.AttachmentGet;
 import me.retrodaredevil.couchdbjava.attachment.AttachmentInfo;
 import me.retrodaredevil.couchdbjava.attachment.ContentEncoding;
@@ -20,6 +20,8 @@ import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
 import okhttp3.*;
+import okio.BufferedSink;
+import okio.Source;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import retrofit2.Retrofit;
@@ -27,11 +29,10 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 import static me.retrodaredevil.couchdbjava.CouchDbUtil.*;
@@ -137,14 +138,17 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 
 	@Override
 	public DocumentResponse updateDocument(String id, String revision, JsonData jsonData) throws CouchDbException {
+		requireNonNull(id);
 		instance.preAuthorize();
 		return instance.executeAndHandle(service.putDocument(requireNonNull(encodeDocumentId(id)), encodeRevisionForHeader(revision), OkHttpUtil.createJsonRequestBody(jsonData)));
 	}
 
 	@Override
 	public DocumentResponse deleteDocument(String id, String revision) throws CouchDbException {
+		requireNonNull(id);
+		requireNonNull(revision);
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.deleteDocument(requireNonNull(encodeDocumentId(id)), requireNonNull(revision)));
+		return instance.executeAndHandle(service.deleteDocument(encodeDocumentId(id), encodeRevisionForHeader(revision)));
 	}
 
 	@Override
@@ -260,7 +264,8 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 			throw new IllegalStateException("response must be successful to use this method!");
 		}
 		AcceptRange acceptRange = AcceptRange.createFromValue(requireNonNull(response.header("Accept-Ranges"), "Accept-Ranges not present"));
-		ContentEncoding contentEncoding = ContentEncoding.fromName(requireNonNull(response.header("Content-Encoding"), "Content-Encoding not present"));
+		String contentEncodingStringOrNull = response.header("Content-Encoding");
+		ContentEncoding contentEncoding = contentEncodingStringOrNull == null ? null : ContentEncoding.fromName(contentEncodingStringOrNull);
 		int contentLength = Integer.parseInt(requireNonNull(response.header("Content-Length"), "Content-Length not present"));
 		String base64EncodedDigest = CouchDbUtil.trimDoubleQuotes(requireNonNull(response.header("ETag"), "ETag not present"));
 		return new AttachmentInfo(acceptRange, contentEncoding, contentLength, base64EncodedDigest);
@@ -301,20 +306,54 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public @NotNull Attachment getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException {
+	public @NotNull AttachmentData getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException {
 		Response response = doAttachmentRequest(attachmentGet, false);
 		if (response.isSuccessful()) {
 			AttachmentInfo info = parseAttachmentInfo(response);
-			final byte[] bytes;
-			try {
-				bytes = requireNonNull(response.body()).bytes();
-			} catch (IOException e) {
-				throw new CouchDbException("Couldn't read all bytes", e);
+			ResponseBody body = requireNonNull(response.body());
+			String contentType = Objects.toString(body.contentType(), null);
+			long contentLength = body.contentLength();
+			if (contentLength < 0) {
+				throw new AssertionError("The implementation should know how many bytes it gave us back!");
 			}
-			return new Attachment(info, bytes);
+			return new AttachmentData(info, contentType, contentLength, body.source());
 		}
 		throw OkHttpUtil.createExceptionFromResponse(response);
 
 	}
+
+	@Override
+	public @NotNull DocumentResponse putAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String documentRevision, @Nullable String contentType) throws CouchDbException {
+		requireNonNull(documentId);
+		requireNonNull(attachmentName);
+		requireNonNull(dataSource);
+		instance.preAuthorize();
+		MediaType mediaType = contentType == null ? null : MediaType.get(contentType);
+		RequestBody body = new RequestBody() {
+			@Nullable
+			@Override
+			public MediaType contentType() {
+				return mediaType;
+			}
+
+			@Override
+			public void writeTo(@NotNull BufferedSink bufferedSink) throws IOException {
+				bufferedSink.writeAll(dataSource);
+			}
+		};
+		String revisionEncodedOrNull = documentRevision == null ? null : encodeRevisionForHeader(documentRevision);
+		return instance.executeAndHandle(service.putAttachment(encodeDocumentId(documentId), encodeAttachmentName(attachmentName), revisionEncodedOrNull, body));
+	}
+
+	@Override
+	public @NotNull DocumentResponse deleteAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull String documentRevision, boolean batch) throws CouchDbException {
+		requireNonNull(documentId);
+		requireNonNull(attachmentName);
+		requireNonNull(documentRevision);
+		instance.preAuthorize();
+		String batchString = batch ? "ok" : null;
+		return instance.executeAndHandle(service.deleteAttachment(documentId, attachmentName, documentRevision, batchString));
+	}
+
 	// endregion
 }
