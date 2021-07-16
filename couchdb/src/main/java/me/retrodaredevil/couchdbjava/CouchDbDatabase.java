@@ -8,19 +8,18 @@ import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.option.DatabaseCreationOption;
 import me.retrodaredevil.couchdbjava.request.BulkGetRequest;
 import me.retrodaredevil.couchdbjava.request.BulkPostRequest;
-import me.retrodaredevil.couchdbjava.request.ViewQuery;
-import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
 import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
 import okio.Source;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
 import java.util.List;
 
-public interface CouchDbDatabase {
+public interface CouchDbDatabase extends CouchDbShared {
 	String getName();
+
+	CouchDbShared getPartition(String partitionName);
 
 	boolean exists() throws CouchDbException;
 	void create(DatabaseCreationOption databaseCreationOption) throws CouchDbException;
@@ -69,10 +68,6 @@ public interface CouchDbDatabase {
 	DocumentResponse copyFromRevisionToExistingDocument(String id, String revision, String targetDocumentId, String targetDocumentRevision) throws CouchDbException;
 
 
-	ViewResponse queryView(String designDoc, String viewName, ViewQueryParams viewQueryParams) throws CouchDbException;
-	default ViewResponse queryView(ViewQuery viewQuery) throws CouchDbException {
-		return queryView(viewQuery.getDesignDoc(), viewQuery.getViewName(), viewQuery.getParams());
-	}
 
 	DatabaseSecurity getSecurity() throws CouchDbException;
 	void setSecurity(DatabaseSecurity databaseSecurity) throws CouchDbException;
@@ -80,6 +75,10 @@ public interface CouchDbDatabase {
 	BulkGetResponse getDocumentsBulk(BulkGetRequest request) throws CouchDbException;
 	List<BulkDocumentResponse> postDocumentsBulk(BulkPostRequest request) throws CouchDbException;
 
+	/**
+	 * Gets information about an attachment on a document
+	 * @see <a href="https://docs.couchdb.org/en/stable/api/document/attachments.html#head--db-docid-attname">HEAD Documentation</a>
+	 */
 	@NotNull AttachmentInfo getAttachmentInfo(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
 	@NotNull AttachmentData getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
 
@@ -99,4 +98,8 @@ public interface CouchDbDatabase {
 		return deleteAttachment(documentId, attachmentName, documentRevision, false);
 	}
 
+	// TODO implement:
+	// _local_docs: https://docs.couchdb.org/en/stable/api/local.html#db-local-docs
+	// _local/id: https://docs.couchdb.org/en/stable/api/local.html#db-local-id
+	// maybe even just put a parameter in existing methods to say isLocal: true|false
 }

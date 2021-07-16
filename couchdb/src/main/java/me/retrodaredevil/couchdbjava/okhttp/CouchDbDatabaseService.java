@@ -62,8 +62,8 @@ public interface CouchDbDatabaseService {
 
 
 
-	@POST("_design/{ddoc}/_view/{view}")
-	Call<ViewResponse> queryView(@Path(value = "ddoc", encoded = true) String designDoc, @Path("view") String viewName, @Body ViewQueryParams viewQueryParams);
+	@POST("{prefix}_design/{ddoc}/_view/{view}")
+	Call<ViewResponse> queryView(@Path(value = "prefix", encoded = true) String prefix, @Path(value = "ddoc", encoded = true) String designDoc, @Path("view") String viewName, @Body ViewQueryParams viewQueryParams);
 
 
 	@GET("_security")

@@ -82,6 +82,8 @@ public final class OkHttpUtil {
 				return new CouchDbNotFoundException("Got 'not found'!" + additionalString, error);
 			case CouchDbStatusCode.UPDATE_CONFLICT:
 				return new CouchDbUpdateConflictException("Update conflict!" + additionalString, error);
+			case CouchDbStatusCode.BAD_REQUEST:
+				return new CouchDbBadRequestException("Bad request!" + additionalString, error);
 		}
 		return new CouchDbCodeException("Unknown status code! code: " + code + additionalString, code, error);
 	}

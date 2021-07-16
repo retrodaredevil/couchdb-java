@@ -11,6 +11,15 @@ on your objects like many other libraries do.
 
 This library works great with Kotlin. Much of the code is annotated with annotations to denote nullability.
 
+### Features
+* Decoupled from JSON library
+* Encourages use of immutable objects
+* _id and _rev paramters are not required on your POJOs  
+* Password auth, cookie auth, and no auth support
+* Uses OkHttp, but has possibility for many implementations using different HTTP libraries
+* Checked exceptions (all inherit from CouchDbException)
+* Integration tested! (This should mean fewer bugs in this library)
+
 ### Using library:
 ```groovy
 allprojects {

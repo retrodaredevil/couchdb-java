@@ -30,7 +30,7 @@ public class DatabaseInfo {
 			@JsonProperty(value = "db_name", required = true) String name,
 			@JsonProperty(value = "purge_seq", required = true) String purgeSequence, @JsonProperty(value = "update_seq", required = true) String updateSequence,
 			@JsonProperty(value = "sizes", required = true) Sizes sizes,
-			@JsonProperty(value = "properties", required = true) Properties properties,
+			@JsonProperty(value = "props", required = true) Properties properties,
 			@JsonProperty(value = "doc_del_count", required = true) int documentDeleteCount,
 			@JsonProperty(value = "doc_count", required = true) int documentCount,
 			@JsonProperty(value = "disk_format_version", required = true) int diskFormatVersion,

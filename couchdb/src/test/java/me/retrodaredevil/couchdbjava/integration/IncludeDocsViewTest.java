@@ -39,15 +39,8 @@ public class IncludeDocsViewTest {
 			documentId = response.getId();
 			revision = response.getRev();
 		}
-		Map<String, Object> idViewMap = new HashMap<>();
-		idViewMap.put("map", "function(doc) {\n  emit(doc._id, null);\n}");
-		Map<String, Object> viewsMap = new HashMap<>();
-		viewsMap.put("id_view", idViewMap);
-		Map<String, Object> designDocumentMap = new HashMap<>();
-		designDocumentMap.put("language", "javascript");
-		designDocumentMap.put("views", viewsMap);
 		ObjectMapper mapper = new ObjectMapper();
-		database.putDocument("_design/test_design", new StringJsonData(mapper.writeValueAsString(designDocumentMap)));
+		database.putDocument("_design/test_design", new StringJsonData(mapper.writeValueAsString(TestUtil.createIdViewDesignDocument())));
 
 
 		ViewResponse response = database.queryView(

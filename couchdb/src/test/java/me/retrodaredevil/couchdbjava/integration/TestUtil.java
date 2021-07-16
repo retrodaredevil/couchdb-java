@@ -8,6 +8,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class TestUtil {
 	private TestUtil() { throw new UnsupportedOperationException(); }
 
@@ -33,4 +36,25 @@ public final class TestUtil {
 				new BasicAuthHandler(CouchDbAuth.create("admin", "password"))
 		);
 	}
+	public static Map<String, Object> createIdViewDesignDocument() {
+		return createIdViewDesignDocument(true);
+	}
+
+	public static Map<String, Object> createIdViewDesignDocument(boolean partitioned) {
+		Map<String, Object> idViewMap = new HashMap<>();
+		idViewMap.put("map", "function(doc) {\n  emit(doc._id, null);\n}");
+		Map<String, Object> viewsMap = new HashMap<>();
+		viewsMap.put("id_view", idViewMap);
+		Map<String, Object> designDocumentMap = new HashMap<>();
+		designDocumentMap.put("language", "javascript");
+		designDocumentMap.put("views", viewsMap);
+		if (!partitioned) {
+			// a design is, by default, partitioned
+			Map<String, Object> optionsMap = new HashMap<>();
+			optionsMap.put("partitioned", false);
+			designDocumentMap.put("options", optionsMap);
+		}
+		return designDocumentMap;
+	}
+
 }

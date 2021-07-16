@@ -8,6 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Represents the structure of an element of _attachments from a get request on a document
+ * @see <a href="https://docs.couchdb.org/en/stable/api/document/common.html#attachments">_attachments strucutre docs</a>
+ */
 public class Attachment {
 	private final String contentType;
 	private final @Nullable byte[] data;
@@ -17,6 +21,7 @@ public class Attachment {
 	private final @Nullable Integer length;
 	private final String revision;
 	private final @Nullable Boolean stub;
+	private final @Nullable Boolean follows;
 
 	@JsonCreator
 	public Attachment(
@@ -27,7 +32,9 @@ public class Attachment {
 			@JsonProperty("encoding") @Nullable String encoding,
 			@JsonProperty("length") @Nullable Integer length,
 			@JsonProperty(value = "revpos", required = true) String revision,
-			@JsonProperty("stub") @Nullable Boolean stub) {
+			@JsonProperty("stub") @Nullable Boolean stub,
+			@JsonProperty("follows") @Nullable Boolean follows) {
+		this.follows = follows;
 		requireNonNull(this.contentType = contentType);
 		this.data = data;
 		this.digest = digest;
@@ -84,5 +91,18 @@ public class Attachment {
 	}
 	public boolean getStub() {
 		return Boolean.TRUE.equals(stub);
+	}
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@JsonProperty("follows")
+	public Boolean getFollowsRaw() {
+		return follows;
+	}
+
+	/**
+	 * @return true if this is a multipart response and the attachment's data is below
+	 */
+	public boolean getFollows() {
+		return Boolean.TRUE.equals(follows);
 	}
 }

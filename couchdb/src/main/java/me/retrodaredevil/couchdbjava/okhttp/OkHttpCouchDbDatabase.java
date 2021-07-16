@@ -1,6 +1,7 @@
 package me.retrodaredevil.couchdbjava.okhttp;
 
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
+import me.retrodaredevil.couchdbjava.CouchDbShared;
 import me.retrodaredevil.couchdbjava.CouchDbStatusCode;
 import me.retrodaredevil.couchdbjava.CouchDbUtil;
 import me.retrodaredevil.couchdbjava.attachment.AcceptRange;
@@ -43,6 +44,8 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	private final OkHttpCouchDbInstance instance;
 	private final CouchDbDatabaseService service;
 
+	private final OkHttpCouchDbShared rootShared;
+
 	public OkHttpCouchDbDatabase(String name, OkHttpCouchDbInstance instance) {
 		if (name.startsWith("_") ? !name.substring(1).matches(DATABASE_REGEX) : !name.matches(DATABASE_REGEX)) {
 			throw new IllegalArgumentException("Invalid database name! name: " + name);
@@ -59,6 +62,8 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 				;
 //		System.out.println(retrofit.baseUrl());
 		service = retrofit.create(CouchDbDatabaseService.class);
+
+		rootShared = new OkHttpCouchDbShared("");
 	}
 	private HttpUrl.Builder createUrlBuilder() {
 		return instance.createUrlBuilder().addPathSegment(name);
@@ -67,6 +72,11 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public CouchDbShared getPartition(String partitionName) {
+		return new OkHttpCouchDbShared("_partition/" + partitionName + "/");
 	}
 
 	@Override
@@ -229,9 +239,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 
 	@Override
 	public ViewResponse queryView(String designDoc, String viewName, ViewQueryParams viewQueryParams) throws CouchDbException {
-		designDoc = designDoc.replaceAll("_design/", ""); // Just in case the user added _design/ to this, let's make that valid
-		instance.preAuthorize();
-		return instance.executeAndHandle(service.queryView(encodeDocumentId(designDoc), viewName, viewQueryParams));
+		return rootShared.queryView(designDoc, viewName, viewQueryParams);
 	}
 
 	@Override
@@ -356,4 +364,25 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	// endregion
+
+	private class OkHttpCouchDbShared implements CouchDbShared {
+		private final String prefix;
+
+		/**
+		 * @param prefix The already encoded prefix
+		 */
+		private OkHttpCouchDbShared(String prefix) {
+			this.prefix = prefix;
+		}
+
+		@Override
+		public ViewResponse queryView(String designDoc, String viewName, ViewQueryParams viewQueryParams) throws CouchDbException {
+			requireNonNull(designDoc);
+			requireNonNull(viewName);
+			requireNonNull(viewQueryParams);
+			designDoc = designDoc.replaceAll("_design/", ""); // Just in case the user added _design/ to this, let's make that valid
+			instance.preAuthorize();
+			return instance.executeAndHandle(service.queryView(prefix, encodeDocumentId(designDoc), viewName, viewQueryParams));
+		}
+	}
 }
