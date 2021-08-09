@@ -92,4 +92,14 @@ public interface CouchDbDatabaseService {
 			@Header("If-Match") String revision,
 			@Query("batch") String batch
 	);
+
+	/**
+	 * https://docs.couchdb.org/en/stable/api/database/compact.html
+	 * https://docs.couchdb.org/en/stable/maintenance/compaction.html#database-compaction
+	 */
+	@POST("_compact")
+	Call<SimpleStatus> compact();
+
+
+	// TODO active tasks: https://docs.couchdb.org/en/stable/api/server/common.html#api-server-active-tasks
 }
