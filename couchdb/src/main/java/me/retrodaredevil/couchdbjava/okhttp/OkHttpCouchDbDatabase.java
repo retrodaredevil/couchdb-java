@@ -243,6 +243,11 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
+	public ViewResponse allDocs(ViewQueryParams viewQueryParams) throws CouchDbException {
+		return rootShared.allDocs(viewQueryParams);
+	}
+
+	@Override
 	public DatabaseSecurity getSecurity() throws CouchDbException {
 		instance.preAuthorize();
 		return instance.executeAndHandle(service.getSecurity());
@@ -383,6 +388,13 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 			designDoc = designDoc.replaceAll("_design/", ""); // Just in case the user added _design/ to this, let's make that valid
 			instance.preAuthorize();
 			return instance.executeAndHandle(service.queryView(prefix, encodeDocumentId(designDoc), viewName, viewQueryParams));
+		}
+
+		@Override
+		public ViewResponse allDocs(ViewQueryParams viewQueryParams) throws CouchDbException {
+			requireNonNull(viewQueryParams);
+			instance.preAuthorize();
+			return instance.executeAndHandle(service.queryView(prefix, viewQueryParams));
 		}
 	}
 }

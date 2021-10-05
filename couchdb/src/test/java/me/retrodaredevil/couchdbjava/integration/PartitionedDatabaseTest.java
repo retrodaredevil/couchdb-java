@@ -71,6 +71,21 @@ public class PartitionedDatabaseTest {
 			assertEquals("my_partition:cool_id", entry.getId());
 			assertEquals("\"my_partition:cool_id\"", entry.getKey().getJson());
 		}
+		ViewResponse allDocsResponse = database.allDocs(new ViewQueryParamsBuilder()
+				.key("my_partition:cool_id")
+				.build());
+		ViewResponse partitionedAllDocsResponse = database.getPartition("my_partition").allDocs(new ViewQueryParamsBuilder()
+				.key("my_partition:cool_id")
+				.build());
+		for (ViewResponse response : new ViewResponse[] { allDocsResponse, partitionedAllDocsResponse }) {
+			assertEquals(2, response.getOffset()); // we likely have an offset from the two design documents -- those are included in _all_docs
+			assertEquals(3, response.getTotalRows());
+			List<ViewResponse.DocumentEntry> entries = response.getRows();
+			assertEquals(1, entries.size());
+			ViewResponse.DocumentEntry entry = entries.get(0);
+			assertEquals("my_partition:cool_id", entry.getId());
+			assertEquals("\"my_partition:cool_id\"", entry.getKey().getJson());
+		}
 
 		// show that querying a partitioned view without specifying a partition will fail
 		try {

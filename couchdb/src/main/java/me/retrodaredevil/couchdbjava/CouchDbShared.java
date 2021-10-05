@@ -23,7 +23,15 @@ public interface CouchDbShared {
 		return queryView(viewQuery.getDesignDoc(), viewQuery.getViewName(), viewQuery.getParams());
 	}
 
+	/**
+	 * Queries all documents.
+	 * @return
+	 * @throws CouchDbException
+	 * @see <a href="https://docs.couchdb.org/en/stable/api/database/bulk-api.html#get--db-_all_docs">_all_docs</a>
+	 * @see <a href="https://docs.couchdb.org/en/stable/api/partitioned-dbs.html#db-partition-partition-all-docs">partition _all_docs</a>
+	 */
+	ViewResponse allDocs(ViewQueryParams viewQueryParams) throws CouchDbException;
+
 	// TODO implement:
 	// _find: https://docs.couchdb.org/en/stable/api/database/find.html#api-db-find
-	// _all_docs: https://docs.couchdb.org/en/stable/api/database/bulk-api.html#get--db-_all_docs
 }
