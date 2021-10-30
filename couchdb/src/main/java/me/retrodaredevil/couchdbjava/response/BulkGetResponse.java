@@ -99,8 +99,7 @@ public class BulkGetResponse {
 				throw new IllegalArgumentException("Either \"ok\" or \"error\" must be present!");
 			}
 			if (jsonData != null && error != null) {
-				// TODO, They actually can be present at the same time... But I don't know why or when that would happen
-				throw new IllegalArgumentException("Both \"ok\" and \"error\" cannot be present at the same time!");
+				throw new IllegalArgumentException("Both \"ok\" and \"error\" cannot be present at the same time! ok: " + jsonData.getJson() + " error: " + error);
 			}
 		}
 	}
@@ -139,6 +138,16 @@ public class BulkGetResponse {
 		}
 		public boolean hasRevision() {
 			return !"undefined".equals(revision);
+		}
+
+		@Override
+		public String toString() {
+			return "ErrorDoc(" +
+					"documentId='" + documentId + '\'' +
+					", revision='" + revision + '\'' +
+					", error='" + error + '\'' +
+					", reason='" + reason + '\'' +
+					')';
 		}
 	}
 }
