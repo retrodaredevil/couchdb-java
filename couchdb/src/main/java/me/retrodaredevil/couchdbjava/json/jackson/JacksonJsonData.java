@@ -14,6 +14,7 @@ import static java.util.Objects.requireNonNull;
 
 @JsonDeserialize(using = JacksonJsonData.Deserializer.class)
 public class JacksonJsonData implements JsonData {
+	public static final JacksonJsonData JSON_NULL_DATA = new JacksonJsonData(NullNode.getInstance());
 	private final JsonNode node;
 
 	public JacksonJsonData(JsonNode node) {
@@ -47,7 +48,7 @@ public class JacksonJsonData implements JsonData {
 
 		@Override
 		public JacksonJsonData getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-			return new JacksonJsonData(NullNode.getInstance());
+			return JSON_NULL_DATA;
 		}
 	}
 	public static class Serializer extends JsonSerializer<JacksonJsonData> {
