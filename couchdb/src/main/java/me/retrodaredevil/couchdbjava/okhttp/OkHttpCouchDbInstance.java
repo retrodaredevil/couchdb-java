@@ -1,5 +1,7 @@
 package me.retrodaredevil.couchdbjava.okhttp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
@@ -101,7 +103,15 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 	public <T> retrofit2.Response<T> executeCall(retrofit2.Call<T> call) throws CouchDbException {
 		try {
 			return call.execute();
+		} catch (ValueInstantiationException e) {
+			// This exception occurs when some RuntimeException is thrown upon the instantiation of an object.
+			//   The JSON is valid, but whatever creator was called deemed something invalid.
+			throw new CouchDbException("Internal deserialization error!", e);
+		} catch (JsonProcessingException e) {
+			// Catch most Jackson related errors, and report "JSON processing error"
+			throw new CouchDbException("Internal JSON processing error!", e);
 		} catch (IOException e) {
+			// Catch any other exception. Most likely going to be a connection failure if it wasn't a Jackson exception
 			throw new CouchDbException("Connection failed!", e);
 		}
 	}

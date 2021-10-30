@@ -99,6 +99,7 @@ public class BulkGetResponse {
 				throw new IllegalArgumentException("Either \"ok\" or \"error\" must be present!");
 			}
 			if (jsonData != null && error != null) {
+				// TODO, They actually can be present at the same time... But I don't know why or when that would happen
 				throw new IllegalArgumentException("Both \"ok\" and \"error\" cannot be present at the same time!");
 			}
 		}

@@ -11,6 +11,9 @@ on your objects like many other libraries do.
 
 This library works great with Kotlin. Much of the code is annotated with annotations to denote nullability.
 
+This is compatible with Cloudant, but does not implement all the features of Cloudant as CouchDB support is the
+primary goal of this project. 
+
 ### Features
 * Decoupled from JSON library
 * Encourages use of immutable objects
@@ -44,6 +47,11 @@ Running integration tests:
 ```
 
 ### Other CouchDB libraries for Java
+* [Cloudant Java SDK](https://github.com/IBM/cloudant-java-sdk)
+  * Up to date
+  * Designed to fully support Cloudant and CouchDB
+  * Uses GSON internally, but GSON doesn't seem to be exposed to the public API.
+  * Tightly coupled to custom Document class
 * [LightCouch](https://github.com/lightcouch/LightCouch)
   * Uses GSON and is tightly coupled to GSON
   * Uses inheritance rather than composition to support alternative HTTP libraries on Android
