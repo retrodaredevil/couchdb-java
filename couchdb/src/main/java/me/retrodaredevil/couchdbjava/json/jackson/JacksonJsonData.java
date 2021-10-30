@@ -39,6 +39,12 @@ public class JacksonJsonData implements JsonData {
 			JsonNode node = p.readValueAs(JsonNode.class);
 			return new JacksonJsonData(node);
 		}
+
+		@Override
+		public Object getAbsentValue(DeserializationContext ctxt) throws JsonMappingException {
+			return null;
+		}
+
 		@Override
 		public JacksonJsonData getNullValue(DeserializationContext ctxt) throws JsonMappingException {
 			return new JacksonJsonData(NullNode.getInstance());
