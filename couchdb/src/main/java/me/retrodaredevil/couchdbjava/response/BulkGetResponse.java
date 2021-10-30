@@ -3,6 +3,7 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.retrodaredevil.couchdbjava.json.JsonData;
+import me.retrodaredevil.couchdbjava.json.jackson.JacksonJsonData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -93,6 +94,16 @@ public class BulkGetResponse {
 
 		@JsonCreator
 		InnerResult(@JsonProperty("ok") JsonData jsonData, @JsonProperty("error") ErrorDoc error) {
+			if (jsonData instanceof JacksonJsonData) {
+				// This is a fix for https://github.com/wildmountainfarms/solarthing/issues/45
+				if (((JacksonJsonData) jsonData).getNode().isNull()) {
+					jsonData = null;
+				}
+			} else if (jsonData != null ){
+				if (jsonData.getJson().equals("null")) {
+					jsonData = null;
+				}
+			}
 			this.jsonData = jsonData;
 			this.error = error;
 			if (jsonData == null && error == null) {
