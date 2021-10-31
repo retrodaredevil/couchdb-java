@@ -3,7 +3,6 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.retrodaredevil.couchdbjava.json.JsonData;
-import me.retrodaredevil.couchdbjava.json.jackson.JacksonJsonData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

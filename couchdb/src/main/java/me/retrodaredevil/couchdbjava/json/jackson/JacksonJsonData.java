@@ -43,6 +43,7 @@ public class JacksonJsonData implements JsonData {
 
 		@Override
 		public Object getAbsentValue(DeserializationContext ctxt) throws JsonMappingException {
+			// Note that this method is not available for Jackson versions below 2.13, so using 2.13 is the only thing that makes the deserialization of this work as expected
 			return null;
 		}
 
