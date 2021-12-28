@@ -31,6 +31,8 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 	Eventually, we could generate tokens clientside https://medium.com/@eiri/couchdb-cookie-authentication-6dd0af6817da
 	 */
 
+	public static final long DEFAULT_RENEW_BEFORE_EXPIRE_PERIOD_MILLIS = 10_000;
+
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 	private static final Logger LOGGER = LoggerFactory.getLogger(CookieAuthHandler.class);
 
@@ -42,6 +44,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 	private String password;
 
 	private volatile boolean autoAuth = true;
+	private volatile long renewBeforeExpirePeriodMillis = DEFAULT_RENEW_BEFORE_EXPIRE_PERIOD_MILLIS;
 
 	public CookieAuthHandler(String username, String password) {
 		updateCredentials(username, password);
@@ -55,13 +58,23 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 	public void setAutoAuth(boolean autoAuth) {
 		this.autoAuth = autoAuth;
 	}
+
+	/**
+	 * Sets the maximum amount of time in milliseconds so the session can be renewed before it expires.
+	 * <p>
+	 * For instance, if you set it to {@code 7000}, then a new session will be obtained 7 seconds before the old one expires.
+	 */
+	public void setRenewBeforeExpirePeriodMillis(long renewBeforeExpirePeriodMillis) {
+		this.renewBeforeExpirePeriodMillis = renewBeforeExpirePeriodMillis;
+	}
+
 	private Cookie getAuthCookie() {
 		Cookie r;
 		synchronized (this) {
 			r = authCookie;
 		}
 		if (r != null) {
-			if (r.expiresAt() > System.currentTimeMillis()) {
+			if (r.expiresAt() - renewBeforeExpirePeriodMillis > System.currentTimeMillis()) {
 				return r;
 			}
 		}
