@@ -68,7 +68,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 		this.renewBeforeExpirePeriodMillis = renewBeforeExpirePeriodMillis;
 	}
 
-	private Cookie getAuthCookie() {
+	public Cookie getAuthCookie() {
 		Cookie r;
 		synchronized (this) {
 			r = authCookie;
@@ -119,32 +119,33 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 				.post(OkHttpUtil.createJsonRequestBody(jsonData))
 				.build();
 		Call call = instance.getClient().newCall(request);
-		Response response = instance.executeCall(call);
-		if (response.isSuccessful()) {
-			List<Cookie> cookies = Cookie.parseAll(url, response.headers());
-			Cookie authSessionCookie = null;
-			for (Cookie c : cookies) {
-				if ("AuthSession".equals(c.name())) {
-					authSessionCookie = c;
-					break;
+		try (Response response = instance.executeCall(call)) {
+			if (response.isSuccessful()) {
+				List<Cookie> cookies = Cookie.parseAll(url, response.headers());
+				Cookie authSessionCookie = null;
+				for (Cookie c : cookies) {
+					if ("AuthSession".equals(c.name())) {
+						authSessionCookie = c;
+						break;
+					}
 				}
+				if (authSessionCookie == null) {
+					throw new CouchDbException("No AuthSession cookie was set!");
+				}
+				LOGGER.debug("Got new authentication cookie that expires at " + authSessionCookie.expiresAt() + ". Persistent: " + authSessionCookie.persistent());
+				synchronized (this) {
+					this.authCookie = authSessionCookie;
+				}
+				SessionPostResponse sessionPostResponse;
+				try {
+					sessionPostResponse = MAPPER.readValue(requireNonNull(response.body()).byteStream(), SessionPostResponse.class);
+				} catch (IOException e) {
+					throw new CouchDbException("Received bad json data!", e);
+				}
+				return sessionPostResponse;
 			}
-			if (authSessionCookie == null) {
-				throw new CouchDbException("No AuthSession cookie was set!");
-			}
-			LOGGER.debug("Got new authentication cookie that expires at " + authSessionCookie.expiresAt() + ". Persistent: " + authSessionCookie.persistent());
-			synchronized (this) {
-				this.authCookie = authSessionCookie;
-			}
-			SessionPostResponse sessionPostResponse;
-			try {
-				sessionPostResponse = MAPPER.readValue(requireNonNull(response.body()).byteStream(), SessionPostResponse.class);
-			} catch (IOException e) {
-				throw new CouchDbException("Received bad json data!", e);
-			}
-			return sessionPostResponse;
+			throw new CouchDbException("Bad response! code: " + response.code());
 		}
-		throw new CouchDbException("Bad response! code: " + response.code());
 	}
 
 	@Override
