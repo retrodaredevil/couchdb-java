@@ -30,7 +30,12 @@ public class PartitionedDatabaseTest {
 		CouchDbInstance instance = TestUtil.createInstance();
 		CouchDbDatabase database = instance.getDatabase(DATABASE);
 		database.create(new DatabaseCreationOption(null, null, true));
-		assertTrue(database.getDatabaseInfo().getProperties().isPartitioned());
+		try {
+			assertTrue(database.getDatabaseInfo().getProperties().isPartitioned());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 
 		try {
 			database.postNewDocument(new StringJsonData("{\"test\": 43}"));
