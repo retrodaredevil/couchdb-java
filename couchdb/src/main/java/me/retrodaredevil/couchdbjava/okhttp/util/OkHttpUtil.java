@@ -73,6 +73,7 @@ public final class OkHttpUtil {
 		if (error != null) {
 			additionalString = " error: " + error.getError() + " reason: " + error.getReason();
 		}
+		// https://docs.couchdb.org/en/stable/api/basics.html#http-status-codes
 		switch(code) {
 			case CouchDbStatusCode.NOT_MODIFIED:
 				return new CouchDbNotModifiedException("Not modified!" + additionalString, error);
@@ -84,6 +85,8 @@ public final class OkHttpUtil {
 				return new CouchDbUpdateConflictException("Update conflict!" + additionalString, error);
 			case CouchDbStatusCode.BAD_REQUEST:
 				return new CouchDbBadRequestException("Bad request!" + additionalString, error);
+			case CouchDbStatusCode.INTERNAL_SERVER_ERROR:
+				return new CouchDbInternalServerErrorException("Internal server error!" + additionalString, error);
 		}
 		return new CouchDbCodeException("Unknown status code! code: " + code + additionalString, code, error);
 	}
