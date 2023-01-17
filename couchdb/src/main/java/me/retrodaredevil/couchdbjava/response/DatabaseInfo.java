@@ -48,9 +48,6 @@ public class DatabaseInfo {
 		this.compactRunning = compactRunning;
 		requireNonNull(this.cluster = cluster);
 		requireNonNull(this.instanceStartTime = instanceStartTime);
-		if (!instanceStartTime.equals("0")) {
-			throw new IllegalArgumentException("The instance_start_time must be 0! It is: " + instanceStartTime);
-		}
 	}
 	@JsonValue
 	private String _jacksonValue() {
@@ -97,6 +94,10 @@ public class DatabaseInfo {
 		return cluster;
 	}
 
+	/**
+	 * Usually "0", but sometimes may be non-zero depending on database version: https://github.com/apache/couchdb/pull/3901
+	 * @return The database creation time in seconds since the epoch
+	 */
 	public String getInstanceStartTime() {
 		return instanceStartTime;
 	}
