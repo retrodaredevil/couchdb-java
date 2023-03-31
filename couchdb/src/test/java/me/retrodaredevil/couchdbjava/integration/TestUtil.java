@@ -13,6 +13,7 @@ import java.util.Map;
 
 public final class TestUtil {
 	private TestUtil() { throw new UnsupportedOperationException(); }
+	public static final CouchDbAuth AUTH = CouchDbAuth.create("admin", "password");
 
 	public static CouchDbInstance createInstance() {
 		return createInstance(false);
@@ -33,7 +34,7 @@ public final class TestUtil {
 						.host("localhost")
 						.port(5984)
 						.build(),
-				new BasicAuthHandler(CouchDbAuth.create("admin", "password"))
+				new BasicAuthHandler(AUTH)
 		);
 	}
 	public static Map<String, Object> createIdViewDesignDocument() {
