@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.NullNode;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import static java.util.Objects.requireNonNull;
 
 @JsonDeserialize(using = JacksonJsonData.Deserializer.class)
+@JsonSerialize(using = JacksonJsonData.Serializer.class)
 public class JacksonJsonData implements JsonData {
 	public static final JacksonJsonData JSON_NULL_DATA = new JacksonJsonData(NullNode.getInstance());
 	private final JsonNode node;
@@ -53,6 +55,7 @@ public class JacksonJsonData implements JsonData {
 		}
 	}
 	public static class Serializer extends JsonSerializer<JacksonJsonData> {
+		// NOTE: This does not seem to work (at least when used as `@Body JsonData data` in a retrofit service) TODO figure out why
 		@Override
 		public void serialize(JacksonJsonData value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 			gen.writeTree(value.node);

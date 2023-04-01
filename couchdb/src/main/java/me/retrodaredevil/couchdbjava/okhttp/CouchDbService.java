@@ -2,6 +2,7 @@ package me.retrodaredevil.couchdbjava.okhttp;
 
 import me.retrodaredevil.couchdbjava.response.CouchDbGetResponse;
 import me.retrodaredevil.couchdbjava.response.DatabaseInfo;
+import me.retrodaredevil.couchdbjava.response.MembershipResponse;
 import me.retrodaredevil.couchdbjava.response.SessionGetResponse;
 import me.retrodaredevil.couchdbjava.response.SimpleStatus;
 import retrofit2.Call;
@@ -21,6 +22,9 @@ public interface CouchDbService {
 
 	@POST("_dbs_info/")
 	Call<List<DatabaseInfo>> getDatabaseInfos(@Body Map<String, List<String>> keysObjectMap);
+
+	@GET("_membership")
+	Call<MembershipResponse> membership();
 
 	@GET("_session/")
 	Call<SessionGetResponse> getSessionInfo();

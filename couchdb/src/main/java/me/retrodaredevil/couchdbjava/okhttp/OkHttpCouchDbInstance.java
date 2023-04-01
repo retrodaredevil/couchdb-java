@@ -2,15 +2,23 @@ package me.retrodaredevil.couchdbjava.okhttp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
+import me.retrodaredevil.couchdbjava.CouchDbConfig;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
+import me.retrodaredevil.couchdbjava.CouchDbNode;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.okhttp.auth.OkHttpAuthHandler;
 import me.retrodaredevil.couchdbjava.okhttp.util.OkHttpUtil;
 import me.retrodaredevil.couchdbjava.response.CouchDbGetResponse;
 import me.retrodaredevil.couchdbjava.response.DatabaseInfo;
+import me.retrodaredevil.couchdbjava.response.MembershipResponse;
 import me.retrodaredevil.couchdbjava.response.SessionGetResponse;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
@@ -53,7 +61,7 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 
 		Retrofit retrofit = new Retrofit.Builder()
 				.client(this.client)
-				.baseUrl(createUrlBuilder().build())
+				.baseUrl(url)
 				.addConverterFactory(JacksonConverterFactory.create())
 				.addConverterFactory(ScalarsConverterFactory.create())
 				.build()
@@ -63,20 +71,35 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 		replicatorDatabase = getDatabase("_replicator");
 		usersDatabase = getDatabase("_users");
 	}
+	/*
+	This createUrlBuilder... code was written in July 2021,
+	and I don't remember why we need a "no query" variant or what query parameters
+	would even be doing in the base URL.
+	If we figure out why in the future, we should add a comment here explaining why to use one or the other
+
+	I just changed a bunch of code to not use this. I will commit these now deprecated methods, so anyone reading this can feel free to remove these deprecated methods
+	 */
+	@Deprecated
 	public HttpUrl.Builder createUrlBuilderNoQuery() {
 		return new HttpUrl.Builder()
 				.scheme(url.scheme())
 				.host(url.host())
 				.port(url.port())
+				.encodedPath(url.encodedPath()) // this is necessary in case the root of the database is something like https://example.com/couchdb/
 				;
 	}
+	@Deprecated
 	public HttpUrl.Builder createUrlBuilder() {
 		return new HttpUrl.Builder()
 				.scheme(url.scheme())
 				.host(url.host())
 				.port(url.port())
+				.encodedPath(url.encodedPath())
 				.query(url.query())
 				;
+	}
+	public HttpUrl getUrl() {
+		return url;
 	}
 	public OkHttpClient getClient() {
 		return client;
@@ -117,9 +140,39 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 	}
 
 	@Override
-	public OkHttpCouchDbDatabase getDatabase(String path) {
-		return new OkHttpCouchDbDatabase(path, this);
+	public OkHttpCouchDbDatabase getDatabase(String pathPrefix, String databaseName) {
+		HttpUrl databaseUrl = url.newBuilder()
+				.addEncodedPathSegments(pathPrefix)
+				.addPathSegment(databaseName)
+				.addEncodedPathSegments("") // this is necessary to make sure there is a trailing /
+				.build();
+		return new OkHttpCouchDbDatabase(databaseName, databaseUrl, this);
 	}
+	@Override
+	public OkHttpCouchDbDatabase getDatabase(String name) {
+		return getDatabase("", name);
+	}
+
+	@Override
+	public CouchDbConfig getConfig(String pathPrefix, String name) {
+		HttpUrl nodeUrl = url.newBuilder()
+				.addEncodedPathSegments(pathPrefix) // assume path prefix is already encoded
+				.addPathSegment(name)
+				.addEncodedPathSegments("") // trailing /
+				.build();
+		return new OkHttpCouchDbConfig(name, nodeUrl, this);
+	}
+
+	@Override
+	public CouchDbNode getNodeByName(String name) {
+		HttpUrl nodeUrl = url.newBuilder()
+				.addPathSegment("_node")
+				.addPathSegment(name)
+				.addEncodedPathSegments("") // trailing /
+				.build();
+		return new OkHttpCouchDbNode(name, nodeUrl, this);
+	}
+
 
 	@Override
 	public CouchDbDatabase getReplicatorDatabase() {
@@ -155,6 +208,12 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 		Map<String, List<String>> map = new HashMap<>();
 		map.put("keys", databaseNames);
 		return executeAndHandle(service.getDatabaseInfos(map));
+	}
+
+	@Override
+	public MembershipResponse membership() throws CouchDbException {
+		preAuthorize();
+		return executeAndHandle(service.membership());
 	}
 
 	void preAuthorize() throws CouchDbException {

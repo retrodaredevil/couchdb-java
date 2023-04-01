@@ -104,7 +104,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 		}
 		requireNonNull(username);
 		requireNonNull(password);
-		HttpUrl url = instance.createUrlBuilder().addPathSegment("_session").build();
+		HttpUrl url = instance.getUrl().newBuilder().addPathSegment("_session").build();
 		Map<String, String> map = new HashMap<>();
 		map.put("name", username);
 		map.put("password", password);

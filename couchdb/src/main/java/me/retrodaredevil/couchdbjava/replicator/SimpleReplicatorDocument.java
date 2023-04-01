@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * @see <a href="https://docs.couchdb.org/en/stable/json-structure.html#replication-settings">docs.couchdb.org/en/stable/json-structure.html#replication-settings</a>
+ * @see <a href=https://docs.couchdb.org/en/stable/api/server/common.html#replicate">docs.couchdb.org/en/stable/api/server/common.html#replicate</a>
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(

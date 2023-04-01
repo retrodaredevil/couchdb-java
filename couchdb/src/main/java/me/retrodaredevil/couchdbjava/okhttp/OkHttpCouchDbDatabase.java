@@ -41,21 +41,23 @@ import static me.retrodaredevil.couchdbjava.CouchDbUtil.*;
 public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	private static final String DATABASE_REGEX = "^[a-z][a-z0-9_$()+/-]*$";
 	private final String name;
+	private final HttpUrl url;
 	private final OkHttpCouchDbInstance instance;
 	private final CouchDbDatabaseService service;
 
 	private final OkHttpCouchDbShared rootShared;
 
-	public OkHttpCouchDbDatabase(String name, OkHttpCouchDbInstance instance) {
+	public OkHttpCouchDbDatabase(String name, HttpUrl url, OkHttpCouchDbInstance instance) {
 		if (name.startsWith("_") ? !name.substring(1).matches(DATABASE_REGEX) : !name.matches(DATABASE_REGEX)) {
 			throw new IllegalArgumentException("Invalid database name! name: " + name);
 		}
 		this.name = name;
+		this.url = url;
 		this.instance = instance;
 
 		Retrofit retrofit = new Retrofit.Builder()
 				.client(instance.getClient())
-				.baseUrl(instance.createUrlBuilderNoQuery().addPathSegment(name).addEncodedPathSegments("").build())
+				.baseUrl(url)
 				.addConverterFactory(JacksonConverterFactory.create())
 				.addConverterFactory(ScalarsConverterFactory.create())
 				.build()
@@ -65,6 +67,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 
 		rootShared = new OkHttpCouchDbShared("");
 	}
+	@Deprecated
 	private HttpUrl.Builder createUrlBuilder() {
 		return instance.createUrlBuilder().addPathSegment(name);
 	}
@@ -170,7 +173,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		instance.preAuthorize();
 		Request.Builder builder = new Request.Builder()
 				.get()
-				.url(createUrlBuilder().addEncodedPathSegments(encodeDocumentId(id)).build());
+				.url(url.newBuilder().addEncodedPathSegments(encodeDocumentId(id)).build());
 		if (revision != null) {
 			builder.header("If-None-Match", revision);
 		}
@@ -194,7 +197,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		Response response = instance.executeCall(instance.getClient().newCall(
 				new Request.Builder()
 						.head()
-						.url(createUrlBuilder().addEncodedPathSegments(encodeDocumentId(id)).build())
+						.url(url.newBuilder().addEncodedPathSegments(encodeDocumentId(id)).build())
 						.build()
 		));
 		if (response.isSuccessful()) {
@@ -292,7 +295,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		instance.preAuthorize();
 		Request.Builder builder = new Request.Builder()
 				.url(
-						createUrlBuilder()
+						url.newBuilder()
 								.addEncodedPathSegments(encodeDocumentId(documentId))
 								.addEncodedPathSegments(encodeAttachmentName(attachmentName))
 								.build()
