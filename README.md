@@ -11,17 +11,19 @@ on your objects like many other libraries do.
 
 This library works great with Kotlin. Much of the code is annotated with annotations to denote nullability.
 
-This is compatible with Cloudant, but does not implement all the features of Cloudant as CouchDB support is the
-primary goal of this project. 
-
 ### Features
 * Decoupled from JSON library
 * Encourages use of immutable objects
-* _id and _rev paramters are not required on your POJOs  
+* _id and _rev parameters are not required on your POJOs  
 * Password auth, cookie auth, and no auth support
 * Uses OkHttp, but has possibility for many implementations using different HTTP libraries
 * Checked exceptions (all inherit from CouchDbException)
 * Integration tested! (This should mean fewer bugs in this library)
+
+### Couchbase, Cloudant, PouchDB support
+The primary goal of this project is to support CouchDB.
+Many features of this library likely work fine with these others databases,
+but it is not guaranteed to work.
 
 ### Using library:
 ```groovy

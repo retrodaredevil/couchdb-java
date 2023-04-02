@@ -206,6 +206,8 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		throw OkHttpUtil.createExceptionFromResponse(response);
 	}
 	private String getRevision(Response response) throws CouchDbException {
+		// TODO ETag value in PouchDB is different than CouchDB.
+		//   We should consider a workaround
 		String revision = response.header("ETag");
 		if (revision == null) {
 			throw new CouchDbException("ETag header was not present!");

@@ -16,13 +16,19 @@ public final class TestUtil {
 	public static final CouchDbAuth AUTH = CouchDbAuth.create("admin", "password");
 
 	public static CouchDbInstance createInstance() {
-		return createInstance(false);
+		return createInstance("couchdb", false);
 	}
 	public static CouchDbInstance createDebugInstance() {
-		return createInstance(true);
+		return createInstance("couchdb", true);
 	}
 
-	private static CouchDbInstance createInstance(boolean debug) {
+	private static CouchDbInstance createInstance(String serviceName, boolean debug) {
+		// The gradle compose plugin sets system properties for the services defined in the docker compose file:
+		//   https://github.com/avast/gradle-docker-compose-plugin
+		String portString = System.getProperty(serviceName + ".tcp.5984");
+		String host = System.getProperty(serviceName + ".host");
+
+		int port = Integer.parseInt(portString);
 		OkHttpClient.Builder builder = new OkHttpClient.Builder();
 		if (debug){
 			builder.addInterceptor(new HttpLoggingInterceptor(System.out::println).setLevel(HttpLoggingInterceptor.Level.BODY));
@@ -31,8 +37,8 @@ public final class TestUtil {
 				builder.build(),
 				new HttpUrl.Builder()
 						.scheme("http")
-						.host("localhost")
-						.port(5984)
+						.host(host)
+						.port(port)
 						.build(),
 				new BasicAuthHandler(AUTH)
 		);

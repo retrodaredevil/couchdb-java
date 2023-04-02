@@ -26,7 +26,7 @@ public class OkHttpCouchDbConfig implements CouchDbConfig {
 				.addConverterFactory(JacksonConverterFactory.create())
 				.build()
 				;
-		System.out.println(retrofit.baseUrl());
+//		System.out.println(retrofit.baseUrl());
 		service = retrofit.create(CouchDbConfigService.class);
 	}
 

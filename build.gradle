@@ -1,3 +1,4 @@
+import java.time.Duration
 
 buildscript {
     ext {
@@ -10,7 +11,7 @@ buildscript {
         // retrofit is why we need allow-opens. context: https://stackoverflow.com/questions/60915381/retrofit2-maven-project-illegal-reflective-access-warning // https://github.com/square/retrofit/issues/3341
         retrofitVersion = "2.9.0" // https://github.com/square/retrofit/releases
         okhttpVersion = "4.9.1" // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-        dockerComposePluginVersion = "0.14.3"
+        dockerComposePluginVersion = "0.16.12"
     }
     repositories {
         mavenCentral()
@@ -63,6 +64,7 @@ subprojects {
     dockerCompose {
         useComposeFiles = ['../testing/couchdb-compose.yml']
         isRequiredBy integration
+        waitForTcpPortsTimeout = Duration.ofMinutes(1)
     }
 }
 
