@@ -45,6 +45,7 @@ Running test and building:
 ```
 Running integration tests:
 ```shell
+docker compose --file testing/docker-compose.yml pull
 ./gradlew integration
 ```
 

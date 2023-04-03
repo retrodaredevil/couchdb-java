@@ -62,7 +62,7 @@ subprojects {
         }
     }
     dockerCompose {
-        useComposeFiles = ['../testing/couchdb-compose.yml']
+        useComposeFiles = ['../testing/docker-compose.yml']
         isRequiredBy integration
         waitForTcpPortsTimeout = Duration.ofMinutes(1)
     }

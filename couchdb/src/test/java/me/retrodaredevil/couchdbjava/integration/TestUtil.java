@@ -1,34 +1,33 @@
 package me.retrodaredevil.couchdbjava.integration;
 
 import me.retrodaredevil.couchdbjava.CouchDbAuth;
+import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
+import me.retrodaredevil.couchdbjava.exception.CouchDbException;
+import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.okhttp.OkHttpCouchDbInstance;
 import me.retrodaredevil.couchdbjava.okhttp.auth.BasicAuthHandler;
+import me.retrodaredevil.couchdbjava.response.DocumentResponse;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public final class TestUtil {
 	private TestUtil() { throw new UnsupportedOperationException(); }
 	public static final CouchDbAuth AUTH = CouchDbAuth.create("admin", "password");
 
-	public static CouchDbInstance createInstance() {
-		return createInstance("couchdb", false);
+	public static CouchDbInstance createInstance(DatabaseService databaseService) {
+		return createInstance(databaseService, false);
 	}
-	public static CouchDbInstance createDebugInstance() {
-		return createInstance("couchdb", true);
+	public static CouchDbInstance createDebugInstance(DatabaseService databaseService) {
+		return createInstance(databaseService, true);
 	}
 
-	private static CouchDbInstance createInstance(String serviceName, boolean debug) {
-		// The gradle compose plugin sets system properties for the services defined in the docker compose file:
-		//   https://github.com/avast/gradle-docker-compose-plugin
-		String portString = System.getProperty(serviceName + ".tcp.5984");
-		String host = System.getProperty(serviceName + ".host");
-
-		int port = Integer.parseInt(portString);
+	private static CouchDbInstance createInstance(DatabaseService databaseService, boolean debug) {
 		OkHttpClient.Builder builder = new OkHttpClient.Builder();
 		if (debug){
 			builder.addInterceptor(new HttpLoggingInterceptor(System.out::println).setLevel(HttpLoggingInterceptor.Level.BODY));
@@ -37,8 +36,8 @@ public final class TestUtil {
 				builder.build(),
 				new HttpUrl.Builder()
 						.scheme("http")
-						.host(host)
-						.port(port)
+						.host(databaseService.getHost())
+						.port(databaseService.getPort())
 						.build(),
 				new BasicAuthHandler(AUTH)
 		);
@@ -64,4 +63,11 @@ public final class TestUtil {
 		return designDocumentMap;
 	}
 
+	public static DocumentResponse postDocumentCompatibility(DatabaseService databaseService, CouchDbDatabase database, JsonData jsonData) throws CouchDbException {
+		if (databaseService == DatabaseService.POUCHDB) {
+			// PouchDB does not support POST /db/
+			return database.putDocument(UUID.randomUUID().toString(), jsonData);
+		}
+		return database.postNewDocument(jsonData);
+	}
 }

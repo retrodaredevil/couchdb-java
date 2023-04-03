@@ -1,4 +1,4 @@
-package me.retrodaredevil.couchdbjava.integration;
+package me.retrodaredevil.couchdbjava.integration.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +7,8 @@ import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
 import me.retrodaredevil.couchdbjava.exception.CouchDbBadRequestException;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
+import me.retrodaredevil.couchdbjava.integration.DatabaseService;
+import me.retrodaredevil.couchdbjava.integration.TestUtil;
 import me.retrodaredevil.couchdbjava.json.StringJsonData;
 import me.retrodaredevil.couchdbjava.option.DatabaseCreationOption;
 import me.retrodaredevil.couchdbjava.request.ViewQueryParamsBuilder;
@@ -15,6 +17,8 @@ import me.retrodaredevil.couchdbjava.response.ErrorResponse;
 import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 
@@ -27,12 +31,14 @@ public class PartitionedDatabaseTest {
 
 	@Test
 	void test() throws CouchDbException, JsonProcessingException {
-		CouchDbInstance instance = TestUtil.createInstance();
+		// partitioned databases not available on PouchDB, so only test on CouchDB
+		CouchDbInstance instance = TestUtil.createInstance(DatabaseService.COUCHDB);
 		CouchDbDatabase database = instance.getDatabase(DATABASE);
 		database.create(new DatabaseCreationOption(null, null, true));
 		assertTrue(database.getDatabaseInfo().getProperties().isPartitioned());
 
 		try {
+			// we don't need TestUtil#postDocumentCompatibility because this is only tested on CouchDB
 			database.postNewDocument(new StringJsonData("{\"test\": 43}"));
 			fail();
 		} catch (CouchDbBadRequestException e) {

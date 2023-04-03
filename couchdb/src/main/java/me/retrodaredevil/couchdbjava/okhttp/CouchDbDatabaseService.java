@@ -3,13 +3,14 @@ package me.retrodaredevil.couchdbjava.okhttp;
 import me.retrodaredevil.couchdbjava.request.BulkGetRequest;
 import me.retrodaredevil.couchdbjava.request.BulkPostRequest;
 import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
-import me.retrodaredevil.couchdbjava.response.*;
+import me.retrodaredevil.couchdbjava.response.BulkDocumentResponse;
+import me.retrodaredevil.couchdbjava.response.BulkGetResponse;
+import me.retrodaredevil.couchdbjava.response.DatabaseInfo;
+import me.retrodaredevil.couchdbjava.response.DocumentResponse;
+import me.retrodaredevil.couchdbjava.response.SimpleStatus;
+import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okio.Source;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -34,10 +35,14 @@ public interface CouchDbDatabaseService {
 	Call<SimpleStatus> deleteDatabase();
 
 	/**
+	 * <a href="https://docs.couchdb.org/en/stable/api/database/common.html#post--db">docs.couchdb.org/en/stable/api/database/common.html#post--db</a>
+	 * <p>
 	 * Puts the document into the database. If the JSON data contains a `_id` field, that will be used
 	 * for the ID. Otherwise, a random ID will be generated.
-	 *
+	 * <p>
 	 * This does not support updating an existing document
+	 * <p>
+	 * This is not supported by PouchDB.
 	 */
 	@POST("./")
 	Call<DocumentResponse> postDocument(@Body RequestBody jsonRequestBody);
@@ -87,11 +92,16 @@ public interface CouchDbDatabaseService {
 			@Header("If-Match") String revision,
 			@Body RequestBody body
 	);
+
+	/**
+	 * https://docs.couchdb.org/en/stable/api/document/attachments.html#delete--db-docid-attname
+	 */
 	@DELETE("{docid}/{attachment}")
 	Call<DocumentResponse> deleteAttachment(
 			@Path(value = "docid", encoded = true) String docid,
 			@Path(value = "attachment", encoded = true) String attachment,
-			@Header("If-Match") String revision,
+//			@Header("If-Match") String revision,
+			@Query("rev") String revision, // CouchDB supports If-Match header here, but PouchDB does not
 			@Query("batch") String batch
 	);
 

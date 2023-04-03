@@ -1,4 +1,4 @@
-package me.retrodaredevil.couchdbjava.integration;
+package me.retrodaredevil.couchdbjava.integration.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,6 +7,8 @@ import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
+import me.retrodaredevil.couchdbjava.integration.DatabaseService;
+import me.retrodaredevil.couchdbjava.integration.TestUtil;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.StringJsonData;
 import me.retrodaredevil.couchdbjava.json.jackson.CouchDbJacksonUtil;
@@ -14,6 +16,8 @@ import me.retrodaredevil.couchdbjava.response.DocumentData;
 import me.retrodaredevil.couchdbjava.response.DocumentResponse;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,15 +44,16 @@ public class DatabaseCreateTest {
 
 	private static final String DATABASE = "test_create_database";
 
-	@Test
-	void test() throws CouchDbException, JsonProcessingException {
-		CouchDbInstance instance = TestUtil.createInstance();
+	@ParameterizedTest
+	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
+	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException {
+		CouchDbInstance instance = TestUtil.createInstance(databaseService);
 		assertFalse(instance.getAllDatabaseNames().contains(DATABASE));
 		CouchDbDatabase database = instance.getDatabase(DATABASE);
 		database.create();
 		assertTrue(instance.getAllDatabaseNames().contains(DATABASE));
 
-		DocumentResponse response = database.postNewDocument(new StringJsonData("{\"test\": 43}"));
+		DocumentResponse response = TestUtil.postDocumentCompatibility(databaseService, database, new StringJsonData("{\"test\": 43}"));
 		String id = response.getId();
 		String expectedRev = response.getRev();
 

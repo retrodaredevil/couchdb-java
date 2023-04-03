@@ -1,0 +1,11 @@
+{
+  "admins": {
+    "admin": "password"
+  },
+  "pouchdb_server": {
+    "in_memory": true
+  },
+  "httpd": {
+    "bind_address": "0.0.0.0"
+  }
+}

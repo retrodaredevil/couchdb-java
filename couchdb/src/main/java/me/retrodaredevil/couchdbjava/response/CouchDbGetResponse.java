@@ -1,6 +1,7 @@
 package me.retrodaredevil.couchdbjava.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.Nullable;
@@ -10,8 +11,11 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
 public class CouchDbGetResponse {
-	private final String message;
+	private final String couchDbMessage;
+	private final String pouchDbMessage;
+	// there may be more field keys for messages of a specific type of database. TODO check this out for Cloudant and Couchbase
 	private final String version;
 	private final @Nullable String gitSha;
 	private final String uuid;
@@ -20,23 +24,30 @@ public class CouchDbGetResponse {
 
 	@JsonCreator
 	public CouchDbGetResponse(
-			@JsonProperty(value = "couchdb", required = true) String message,
+			@JsonProperty(value = "couchdb") @Nullable String couchDbMessage,
+			@JsonProperty(value = "express-pouchdb") @Nullable String pouchDbMessage,
 			@JsonProperty(value = "version", required = true) String version,
 			@JsonProperty("git_sha") @Nullable String gitSha,
 			@JsonProperty(value = "uuid", required = true) String uuid,
 			@JsonProperty(value = "features") List<String> features,
 			@JsonProperty(value = "vendor", required = true) Vendor vendor) {
-		requireNonNull(this.message = message);
-		requireNonNull(this.version = version);
+		this.couchDbMessage = couchDbMessage;
+		this.pouchDbMessage = pouchDbMessage;
+		this.version = requireNonNull(version);
 		this.gitSha = gitSha;
-		requireNonNull(this.uuid = uuid);
+		this.uuid = requireNonNull(uuid);
 		this.features = features == null ? Collections.emptyList() : features;
-		requireNonNull(this.vendor = vendor);
+		this.vendor = requireNonNull(vendor);
 	}
 
 	@JsonProperty("couchdb")
-	public String getMessage() {
-		return message;
+	public @Nullable String getCouchDbMessage() {
+		return couchDbMessage;
+	}
+
+	@JsonProperty("express-pouchdb")
+	public @Nullable String getPouchDbMessage() {
+		return pouchDbMessage;
 	}
 
 	@JsonProperty("version")
@@ -45,7 +56,7 @@ public class CouchDbGetResponse {
 	}
 
 	@JsonProperty("git_sha")
-	public String getGitSha() {
+	public @Nullable String getGitSha() {
 		return gitSha;
 	}
 

@@ -9,18 +9,29 @@ import me.retrodaredevil.couchdbjava.attachment.AttachmentData;
 import me.retrodaredevil.couchdbjava.attachment.AttachmentGet;
 import me.retrodaredevil.couchdbjava.attachment.AttachmentInfo;
 import me.retrodaredevil.couchdbjava.attachment.ContentEncoding;
-import me.retrodaredevil.couchdbjava.request.BulkGetRequest;
-import me.retrodaredevil.couchdbjava.request.BulkPostRequest;
-import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
 import me.retrodaredevil.couchdbjava.exception.CouchDbCodeException;
+import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.StringJsonData;
 import me.retrodaredevil.couchdbjava.okhttp.util.OkHttpUtil;
 import me.retrodaredevil.couchdbjava.option.DatabaseCreationOption;
-import me.retrodaredevil.couchdbjava.response.*;
-import me.retrodaredevil.couchdbjava.exception.CouchDbException;
+import me.retrodaredevil.couchdbjava.request.BulkGetRequest;
+import me.retrodaredevil.couchdbjava.request.BulkPostRequest;
+import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
+import me.retrodaredevil.couchdbjava.response.BulkDocumentResponse;
+import me.retrodaredevil.couchdbjava.response.BulkGetResponse;
+import me.retrodaredevil.couchdbjava.response.DatabaseInfo;
+import me.retrodaredevil.couchdbjava.response.DocumentData;
+import me.retrodaredevil.couchdbjava.response.DocumentResponse;
+import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
-import okhttp3.*;
+import me.retrodaredevil.couchdbjava.tag.DocumentEntityTag;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Source;
 import org.jetbrains.annotations.NotNull;
@@ -175,6 +186,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 				.get()
 				.url(url.newBuilder().addEncodedPathSegments(encodeDocumentId(id)).build());
 		if (revision != null) {
+			// TODO test on PouchDB
 			builder.header("If-None-Match", revision);
 		}
 		Response response = instance.executeCall(instance.getClient().newCall(builder.build()));
@@ -185,7 +197,24 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 			} catch (IOException e) {
 				throw new CouchDbException("Couldn't read response!", e);
 			}
-			return new DocumentData(getRevision(response), new StringJsonData(json));
+			JsonData jsonData = new StringJsonData(json);
+			final DocumentEntityTag eTag;
+			try {
+				eTag = DocumentEntityTag.fromDocumentResponse(response);
+			} catch (IllegalArgumentException e) {
+				throw new CouchDbException("Bad response!", e);
+			}
+			final String responseRevision;
+			if (eTag.isRevision()) {
+				responseRevision = eTag.getValue(); // DocumentEntity has already performed validation
+			} else { // This else only happens on PouchDB servers
+				try {
+					responseRevision = CouchDbUtil.revisionFromJson(jsonData);
+				} catch (IllegalArgumentException e) {
+					throw new CouchDbException("Bad response!", e);
+				}
+			}
+			return new DocumentData(responseRevision, jsonData, eTag);
 		}
 		throw OkHttpUtil.createExceptionFromResponse(response);
 
@@ -205,6 +234,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		}
 		throw OkHttpUtil.createExceptionFromResponse(response);
 	}
+	@Deprecated
 	private String getRevision(Response response) throws CouchDbException {
 		// TODO ETag value in PouchDB is different than CouchDB.
 		//   We should consider a workaround
@@ -281,7 +311,10 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		if (!response.isSuccessful()) {
 			throw new IllegalStateException("response must be successful to use this method!");
 		}
-		AcceptRange acceptRange = AcceptRange.createFromValue(requireNonNull(response.header("Accept-Ranges"), "Accept-Ranges not present"));
+		String acceptRangeHeaderValue = response.header("Accept-Ranges"); // on CouchDB this value is never null, but on PouchDB it is null
+		AcceptRange acceptRange = acceptRangeHeaderValue == null ? AcceptRange.NONE : AcceptRange.createFromValue(acceptRangeHeaderValue);
+//		AcceptRange acceptRange = AcceptRange.createFromValue(requireNonNull(response.header("Accept-Ranges"), "Accept-Ranges not present"));
+
 		String contentEncodingStringOrNull = response.header("Content-Encoding");
 		ContentEncoding contentEncoding = contentEncodingStringOrNull == null ? null : ContentEncoding.fromName(contentEncodingStringOrNull);
 		int contentLength = Integer.parseInt(requireNonNull(response.header("Content-Length"), "Content-Length not present"));
@@ -295,23 +328,33 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		String attachmentDigest = attachmentGet.getAttachmentDigest();
 		String documentRevision = attachmentGet.getDocumentRevision();
 		instance.preAuthorize();
-		Request.Builder builder = new Request.Builder()
-				.url(
-						url.newBuilder()
-								.addEncodedPathSegments(encodeDocumentId(documentId))
-								.addEncodedPathSegments(encodeAttachmentName(attachmentName))
-								.build()
-				);
-		if (head) {
-			builder.head();
+		final HttpUrl requestUrl;
+		{
+			HttpUrl.Builder urlBuilder = url.newBuilder()
+					.addEncodedPathSegments(encodeDocumentId(documentId))
+					.addEncodedPathSegments(encodeAttachmentName(attachmentName));
+			if (documentRevision != null) {
+				urlBuilder.addQueryParameter("rev", documentRevision);
+			}
+			requestUrl = urlBuilder.build();
 		}
-		if (attachmentDigest != null) {
-			builder.header("If-None-Match", attachmentDigest);
+		final Request request;
+		{
+			Request.Builder builder = new Request.Builder()
+					.url(requestUrl);
+			if (head) {
+				// https://docs.couchdb.org/en/stable/api/document/attachments.html#head--db-docid-attname
+				builder.head();
+			}
+			// if not head: https://docs.couchdb.org/en/stable/api/document/attachments.html#get--db-docid-attname
+			if (attachmentDigest != null) {
+				builder.header("If-None-Match", attachmentDigest);
+			}
+			// We used to add the If-Match header here, but we instead use the rev query parameter, which PouchDB supports
+			// TODO PouchDB may allow a weak validator
+			request = builder.build();
 		}
-		if (documentRevision != null) {
-			builder.header("If-Match", documentRevision);
-		}
-		return instance.executeCall(instance.getClient().newCall(builder.build()));
+		return instance.executeCall(instance.getClient().newCall(request));
 	}
 
 	@Override
@@ -357,6 +400,16 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 			@Override
 			public void writeTo(@NotNull BufferedSink bufferedSink) throws IOException {
 				bufferedSink.writeAll(dataSource);
+			}
+
+			@Override
+			public boolean isOneShot() {
+				// This is one shot because once writeTo is called, the Source is consumed.
+				//   This is important especially while debugging because it guarantees that HttpLoggingInterceptor
+				//   will not call writeTo() for debugging purposes.
+				// TODO maybe base the return value of isOneShot on the type of dataSource
+				//   (Maybe a buffered source doesn't have to be a one shot)
+				return true;
 			}
 		};
 		String revisionEncodedOrNull = documentRevision == null ? null : encodeRevisionForHeader(documentRevision);

@@ -1,4 +1,4 @@
-package me.retrodaredevil.couchdbjava.integration;
+package me.retrodaredevil.couchdbjava.integration.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,8 @@ import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
+import me.retrodaredevil.couchdbjava.integration.DatabaseService;
+import me.retrodaredevil.couchdbjava.integration.TestUtil;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.StringJsonData;
 import me.retrodaredevil.couchdbjava.json.jackson.CouchDbJacksonUtil;
@@ -13,8 +15,11 @@ import me.retrodaredevil.couchdbjava.replicator.ReplicatorDocument;
 import me.retrodaredevil.couchdbjava.replicator.SimpleReplicatorDocument;
 import me.retrodaredevil.couchdbjava.replicator.source.ObjectReplicatorSource;
 import me.retrodaredevil.couchdbjava.replicator.source.ReplicatorSource;
+import me.retrodaredevil.couchdbjava.response.DocumentResponse;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.net.URI;
 
@@ -27,20 +32,24 @@ public class ReplicatorTest {
 
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
-	@Test
-	void test() throws CouchDbException, JsonProcessingException, InterruptedException {
-		CouchDbInstance instance = TestUtil.createInstance();
+	@ParameterizedTest
+	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
+	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException, InterruptedException {
+		CouchDbInstance instance = TestUtil.createInstance(databaseService);
 		CouchDbDatabase replicator = instance.getReplicatorDatabase();
 		CouchDbDatabase source = instance.getDatabase(SOURCE_DATABASE);
 		CouchDbDatabase target = instance.getDatabase(TARGET_DATABASE);
 		source.create();
-		source.postNewDocument(new StringJsonData("{\"_id\": \"my_test_doc\", \"test\": 43}"));
+//		source.postNewDocument(new StringJsonData("{\"_id\": \"my_test_doc\", \"test\": 43}"));
+		TestUtil.postDocumentCompatibility(databaseService, source, new StringJsonData("{\"_id\": \"my_test_doc\", \"test\": 43}"));
 
+		// addAuthObject is only supported on CouchDB version >=3.2.0.
+		//   We should encourage others to use this, but PouchDB cannot use it, so we stick with addAuthHeader
 		ReplicatorSource sourceSource = ObjectReplicatorSource.builder(URI.create("http://localhost:5984/" + SOURCE_DATABASE))
-				.addAuthObject(TestUtil.AUTH) // remember this is only supported on >=3.2.0. We probably should not encourage users to use this
+				.addAuthHeader(TestUtil.AUTH)
 				.build();
 		ReplicatorSource targetSource = ObjectReplicatorSource.builder(URI.create("http://localhost:5984/" + TARGET_DATABASE))
-				.addAuthObject(TestUtil.AUTH)
+				.addAuthHeader(TestUtil.AUTH)
 				.build();
 		ReplicatorDocument replicatorDocument = SimpleReplicatorDocument.builder(sourceSource, targetSource)
 				.createTarget()

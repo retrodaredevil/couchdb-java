@@ -30,6 +30,9 @@ public interface CouchDbDatabase extends CouchDbShared {
 
 	DatabaseInfo getDatabaseInfo() throws CouchDbException;
 
+	/**
+	 * Note: Does not work on PouchDB. Fails with "only_multipart_accepted"
+	 */
 	DocumentResponse postNewDocument(JsonData jsonData) throws CouchDbException;
 
 	/**

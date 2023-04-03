@@ -8,4 +8,11 @@ services:
       - 'COUCHDB_PASSWORD=password'
     ports:
       - '5984'
+  pouchdb:
+    image: 'ghcr.io/retrodaredevil/pouchdb-server:edge-4.2.0'
+    command: --config /app/config.json
+    volumes:
+      - './pouchdb-config.json:/app/config.json:ro'
+    ports:
+      - '5984'
 
