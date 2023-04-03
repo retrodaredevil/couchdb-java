@@ -10,6 +10,7 @@ import me.retrodaredevil.couchdbjava.request.BulkGetRequest;
 import me.retrodaredevil.couchdbjava.request.BulkPostRequest;
 import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
+import me.retrodaredevil.couchdbjava.tag.DocumentEntityTag;
 import okio.Source;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +33,11 @@ public interface CouchDbDatabase extends CouchDbShared {
 
 	/**
 	 * Note: Does not work on PouchDB. Fails with "only_multipart_accepted"
+	 * <p>
+	 * Note that the {@link DocumentResponse#getETag()} value was not actually part of any header,
+	 * but was assumed from the revision. Since this does not work on PouchDB, the implementation is free to
+	 * always return a {@link DocumentEntityTag} with {@link DocumentEntityTag#isRevision() isRevision()} {@code == true}.
+	 * @return The document response
 	 */
 	DocumentResponse postNewDocument(JsonData jsonData) throws CouchDbException;
 
@@ -55,14 +61,18 @@ public interface CouchDbDatabase extends CouchDbShared {
 	DocumentData getDocument(String id) throws CouchDbException;
 
 	/**
-	 *
+	 * Note: Some implementations may support {@code revision} being null, some may not
 	 * @param id The id of the document
 	 * @param revision The revision of the document. If this is the latest revision, {@link me.retrodaredevil.couchdbjava.exception.CouchDbNotModifiedException} is thrown.
 	 * @return DocumentData containing the data and revision of the retreived document
 	 * @throws me.retrodaredevil.couchdbjava.exception.CouchDbNotModifiedException Thrown if the specified document is still at the given revision
 	 * @throws CouchDbException May represent a connection error or that a document wasn't found, permission error, etc.
 	 */
-	DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException;
+	default DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException {
+		return getDocumentIfUpdated(id, DocumentEntityTag.createFromRevision(revision));
+	}
+
+	DocumentData getDocumentIfUpdated(String id, DocumentEntityTag eTag) throws CouchDbException;
 	String getCurrentRevision(String id) throws CouchDbException;
 
 	DocumentResponse copyToNewDocument(String id, String newDocumentId) throws CouchDbException;

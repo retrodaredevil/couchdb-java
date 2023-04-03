@@ -147,16 +147,36 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		return instance.executeAndHandle(service.getInfo());
 	}
 
+	private static DocumentResponse transformDocumentResponse(retrofit2.Response<DocumentResponse.Body> response) {
+		String rawETag = response.headers().get("ETag");
+		DocumentEntityTag eTag = DocumentEntityTag.parseETag(requireNonNull(rawETag, "ETag not present on response!"));
+		if (!response.isSuccessful()) {
+			throw new AssertionError("You should not be using this method if you did not already check whether this was a successful response!");
+		}
+		return DocumentResponse.create(
+				requireNonNull(response.body(), "Response was successful, so body should not be null!"),
+				eTag
+		);
+	}
+
 	@Override
 	public DocumentResponse postNewDocument(JsonData jsonData) throws CouchDbException {
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.postDocument(OkHttpUtil.createJsonRequestBody(jsonData)));
+		return instance.executeAndHandle(service.postDocument(OkHttpUtil.createJsonRequestBody(jsonData)), response -> {
+			if (!response.isSuccessful()) {
+				throw new AssertionError("You should not be using this method if you did not already check whether this was a successful response!");
+			}
+			DocumentResponse.Body body = requireNonNull(response.body(), "Response was successful");
+			// We do not expect this response to have an ETag header
+			// Also, this method does not work on PouchDB, so we can freely assume that using a DocumentEntityTag with isRevision() == true is safe.
+			return DocumentResponse.create(body, DocumentEntityTag.createFromRevision(body.getRev()));
+		});
 	}
 
 	@Override
 	public DocumentResponse putDocument(String id, JsonData jsonData) throws CouchDbException {
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.putDocument(encodeDocumentId(id), null, OkHttpUtil.createJsonRequestBody(jsonData)));
+		return instance.executeAndHandle(service.putDocument(encodeDocumentId(id), null, OkHttpUtil.createJsonRequestBody(jsonData)), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 
@@ -164,7 +184,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	public DocumentResponse updateDocument(String id, String revision, JsonData jsonData) throws CouchDbException {
 		requireNonNull(id);
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.putDocument(requireNonNull(encodeDocumentId(id)), encodeRevisionForHeader(revision), OkHttpUtil.createJsonRequestBody(jsonData)));
+		return instance.executeAndHandle(service.putDocument(requireNonNull(encodeDocumentId(id)), encodeRevisionForHeader(revision), OkHttpUtil.createJsonRequestBody(jsonData)), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
@@ -172,22 +192,30 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		requireNonNull(id);
 		requireNonNull(revision);
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.deleteDocument(encodeDocumentId(id), encodeRevisionForHeader(revision)));
+		return instance.executeAndHandle(service.deleteDocument(encodeDocumentId(id), encodeRevisionForHeader(revision)), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
 	public DocumentData getDocument(String id) throws CouchDbException {
-		return getDocumentIfUpdated(id, null);
+		return getDocumentIfUpdated(id, (DocumentEntityTag) null);
 	}
+
 	@Override
 	public DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException {
+		return getDocumentIfUpdated(id, DocumentEntityTag.createFromRevision(revision));
+	}
+
+	@Override
+	public DocumentData getDocumentIfUpdated(String id, @Nullable DocumentEntityTag eTag) throws CouchDbException {
+		// https://docs.couchdb.org/en/stable/api/document/common.html#get--db-docid
 		instance.preAuthorize();
 		Request.Builder builder = new Request.Builder()
 				.get()
 				.url(url.newBuilder().addEncodedPathSegments(encodeDocumentId(id)).build());
-		if (revision != null) {
-			// TODO test on PouchDB
-			builder.header("If-None-Match", revision);
+		if (eTag != null) {
+			// On PouchDB this only works if DocumentEntityTag#isWeak() == true
+			// There is no workaround for that as there is no alternate query parameter that we can use
+			builder.header("If-None-Match", eTag.getRawValue());
 		}
 		Response response = instance.executeCall(instance.getClient().newCall(builder.build()));
 		if (response.isSuccessful()) {
@@ -198,15 +226,15 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 				throw new CouchDbException("Couldn't read response!", e);
 			}
 			JsonData jsonData = new StringJsonData(json);
-			final DocumentEntityTag eTag;
+			final DocumentEntityTag responseETag;
 			try {
-				eTag = DocumentEntityTag.fromDocumentResponse(response);
+				responseETag = DocumentEntityTag.fromDocumentResponse(response);
 			} catch (IllegalArgumentException e) {
 				throw new CouchDbException("Bad response!", e);
 			}
 			final String responseRevision;
-			if (eTag.isRevision()) {
-				responseRevision = eTag.getValue(); // DocumentEntity has already performed validation
+			if (responseETag.isRevision()) {
+				responseRevision = responseETag.getValue(); // DocumentEntityTag has already performed validation
 			} else { // This else only happens on PouchDB servers
 				try {
 					responseRevision = CouchDbUtil.revisionFromJson(jsonData);
@@ -214,7 +242,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 					throw new CouchDbException("Bad response!", e);
 				}
 			}
-			return new DocumentData(responseRevision, jsonData, eTag);
+			return new DocumentData(responseRevision, jsonData, responseETag);
 		}
 		throw OkHttpUtil.createExceptionFromResponse(response);
 
@@ -251,25 +279,25 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	@Override
 	public DocumentResponse copyToNewDocument(String id, String newDocumentId) throws CouchDbException {
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.copyToDocument(encodeDocumentId(id), newDocumentId));
+		return instance.executeAndHandle(service.copyToDocument(encodeDocumentId(id), newDocumentId), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
 	public DocumentResponse copyFromRevisionToNewDocument(String id, String revision, String newDocumentId) throws CouchDbException {
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.copyFromRevisionToDocument(encodeDocumentId(id), revision, newDocumentId));
+		return instance.executeAndHandle(service.copyFromRevisionToDocument(encodeDocumentId(id), revision, newDocumentId), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
 	public DocumentResponse copyToExistingDocument(String id, String targetDocumentId, String targetDocumentRevision) throws CouchDbException {
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.copyToDocument(encodeDocumentId(id), targetDocumentId + "?rev=" + targetDocumentRevision));
+		return instance.executeAndHandle(service.copyToDocument(encodeDocumentId(id), targetDocumentId + "?rev=" + targetDocumentRevision), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
 	public DocumentResponse copyFromRevisionToExistingDocument(String id, String revision, String targetDocumentId, String targetDocumentRevision) throws CouchDbException {
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.copyFromRevisionToDocument(encodeDocumentId(id), revision, targetDocumentId + "?rev=" + targetDocumentRevision));
+		return instance.executeAndHandle(service.copyFromRevisionToDocument(encodeDocumentId(id), revision, targetDocumentId + "?rev=" + targetDocumentRevision), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
@@ -413,7 +441,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 			}
 		};
 		String revisionEncodedOrNull = documentRevision == null ? null : encodeRevisionForHeader(documentRevision);
-		return instance.executeAndHandle(service.putAttachment(encodeDocumentId(documentId), encodeAttachmentName(attachmentName), revisionEncodedOrNull, body));
+		return instance.executeAndHandle(service.putAttachment(encodeDocumentId(documentId), encodeAttachmentName(attachmentName), revisionEncodedOrNull, body), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
@@ -423,7 +451,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		requireNonNull(documentRevision);
 		instance.preAuthorize();
 		String batchString = batch ? "ok" : null;
-		return instance.executeAndHandle(service.deleteAttachment(documentId, attachmentName, documentRevision, batchString));
+		return instance.executeAndHandle(service.deleteAttachment(documentId, attachmentName, documentRevision, batchString), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	// endregion

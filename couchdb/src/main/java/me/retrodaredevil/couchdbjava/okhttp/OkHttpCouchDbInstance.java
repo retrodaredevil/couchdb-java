@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -116,9 +117,12 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 		}
 	}
 	public <T> T executeAndHandle(retrofit2.Call<T> call) throws CouchDbException {
+		return executeAndHandle(call, retrofit2.Response::body);
+	}
+	public <T, U> U executeAndHandle(retrofit2.Call<T> call, Function<retrofit2.Response<T>, U> transform) throws CouchDbException {
 		retrofit2.Response<T> response = executeCall(call);
 		if (response.isSuccessful()) {
-			return response.body();
+			return transform.apply(response);
 		}
 
 		throw OkHttpUtil.createExceptionFromResponse(response);

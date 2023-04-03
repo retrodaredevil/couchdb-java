@@ -1,8 +1,9 @@
 package me.retrodaredevil.couchdbjava.tag;
 
 import me.retrodaredevil.couchdbjava.CouchDbUtil;
-import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import okhttp3.Response;
+
+import java.util.Objects;
 
 /**
  * Represents an entity tag for a document.
@@ -43,6 +44,24 @@ public final class DocumentEntityTag {
 	 */
 	public boolean isRevision() {
 		return !weak;
+	}
+
+	@Override
+	public String toString() {
+		return rawValue;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DocumentEntityTag entityTag = (DocumentEntityTag) o;
+		return weak == entityTag.weak && rawValue.equals(entityTag.rawValue) && value.equals(entityTag.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(rawValue, weak, value);
 	}
 
 	/**

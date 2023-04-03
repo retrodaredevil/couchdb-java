@@ -45,24 +45,24 @@ public interface CouchDbDatabaseService {
 	 * This is not supported by PouchDB.
 	 */
 	@POST("./")
-	Call<DocumentResponse> postDocument(@Body RequestBody jsonRequestBody);
+	Call<DocumentResponse.Body> postDocument(@Body RequestBody jsonRequestBody);
 
 	/**
 	 * Puts the document into the database with the given id.
 	 * @param revision The revision of the existing document or null if this is a new document. This could also be null if you put the revision in the body.
 	 */
 	@PUT("{docid}")
-	Call<DocumentResponse> putDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String revision, @Body RequestBody jsonRequestBody);
+	Call<DocumentResponse.Body> putDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String revision, @Body RequestBody jsonRequestBody); // TODO make If-Match compatible with PouchDB
 
 	@DELETE("{docid}")
-	Call<DocumentResponse> deleteDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String revision);
+	Call<DocumentResponse.Body> deleteDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String revision); // TODO make If-Match compatible with PouchDB
 
 
 	@HTTP(method = "COPY", path = "{docid}")
-	Call<DocumentResponse> copyToDocument(@Path(value = "docid", encoded = true) String docid, @Header("Destination") String newDocumentId);
+	Call<DocumentResponse.Body> copyToDocument(@Path(value = "docid", encoded = true) String docid, @Header("Destination") String newDocumentId);
 
 	@HTTP(method = "COPY", path = "{docid}")
-	Call<DocumentResponse> copyFromRevisionToDocument(@Path(value = "docid", encoded = true) String docid, @Query("rev") String revision, @Header("Destination") String newDocumentId);
+	Call<DocumentResponse.Body> copyFromRevisionToDocument(@Path(value = "docid", encoded = true) String docid, @Query("rev") String revision, @Header("Destination") String newDocumentId);
 
 
 
@@ -86,10 +86,10 @@ public interface CouchDbDatabaseService {
 	Call<List<BulkDocumentResponse>> postDocumentsBulk(@Body BulkPostRequest request);
 
 	@PUT("{docid}/{attachment}")
-	Call<DocumentResponse> putAttachment(
+	Call<DocumentResponse.Body> putAttachment(
 			@Path(value = "docid", encoded = true) String docid,
 			@Path(value = "attachment", encoded = true) String attachment,
-			@Header("If-Match") String revision,
+			@Header("If-Match") String revision, // TODO change for PouchDB compatibility
 			@Body RequestBody body
 	);
 
@@ -97,7 +97,7 @@ public interface CouchDbDatabaseService {
 	 * https://docs.couchdb.org/en/stable/api/document/attachments.html#delete--db-docid-attname
 	 */
 	@DELETE("{docid}/{attachment}")
-	Call<DocumentResponse> deleteAttachment(
+	Call<DocumentResponse.Body> deleteAttachment(
 			@Path(value = "docid", encoded = true) String docid,
 			@Path(value = "attachment", encoded = true) String attachment,
 //			@Header("If-Match") String revision,
