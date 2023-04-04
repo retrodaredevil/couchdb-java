@@ -33,7 +33,7 @@ public class AttachmentTest {
 	@ParameterizedTest
 	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
 	void test(DatabaseService databaseService) throws CouchDbException, IOException {
-		CouchDbInstance instance = TestUtil.createInstance(databaseService);
+		CouchDbInstance instance = TestUtil.createDebugInstance(databaseService);
 		CouchDbDatabase database = instance.getDatabase(DATABASE);
 		database.create();
 
@@ -83,5 +83,7 @@ public class AttachmentTest {
 		// assert that the blank document is still there
 		DocumentData documentData = database.getDocument("test_id");
 		assertEquals(deleteResponse.getRev(), documentData.getRevision());
+
+		// TODO test updating attachment
 	}
 }

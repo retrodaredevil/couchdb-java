@@ -158,6 +158,24 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 				eTag
 		);
 	}
+	private static DocumentResponse transformDocumentResponseOptionalETag(retrofit2.Response<DocumentResponse.Body> response) {
+		if (!response.isSuccessful()) {
+			throw new AssertionError("You should not be using this method if you did not already check whether this was a successful response!");
+		}
+		String rawETag = response.headers().get("ETag");
+		DocumentResponse.Body responseBody = requireNonNull(response.body(), "Response was successful, so body should not be null!");
+		if (rawETag == null) { // this occurs on CouchDB, but not PouchDB
+			return DocumentResponse.create(
+					responseBody,
+					DocumentEntityTag.fromRevision(responseBody.getRev())
+			);
+		}
+		DocumentEntityTag eTag = DocumentEntityTag.parseETag(requireNonNull(rawETag, "ETag not present on response!"));
+		return DocumentResponse.create(
+				responseBody,
+				eTag
+		);
+	}
 
 	@Override
 	public DocumentResponse postNewDocument(JsonData jsonData) throws CouchDbException {
@@ -448,7 +466,10 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 			}
 		};
 		String revisionEncodedOrNull = documentRevision == null ? null : encodeRevisionForHeader(documentRevision);
-		return instance.executeAndHandle(service.putAttachment(encodeDocumentId(documentId), encodeAttachmentName(attachmentName), revisionEncodedOrNull, body), OkHttpCouchDbDatabase::transformDocumentResponse);
+		return instance.executeAndHandle(
+				service.putAttachment(encodeDocumentId(documentId), encodeAttachmentName(attachmentName), revisionEncodedOrNull, body),
+				OkHttpCouchDbDatabase::transformDocumentResponseOptionalETag
+		);
 	}
 
 	@Override
@@ -458,7 +479,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		requireNonNull(documentRevision);
 		instance.preAuthorize();
 		String batchString = batch ? "ok" : null;
-		return instance.executeAndHandle(service.deleteAttachment(documentId, attachmentName, documentRevision, batchString), OkHttpCouchDbDatabase::transformDocumentResponse);
+		return instance.executeAndHandle(service.deleteAttachment(documentId, attachmentName, documentRevision, batchString), OkHttpCouchDbDatabase::transformDocumentResponseOptionalETag);
 	}
 
 	// endregion
