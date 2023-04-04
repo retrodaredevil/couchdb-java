@@ -48,11 +48,21 @@ public interface CouchDbDatabaseService {
 	Call<DocumentResponse.Body> postDocument(@Body RequestBody jsonRequestBody);
 
 	/**
+	 * <a href="https://docs.couchdb.org/en/stable/api/document/common.html#put--db-docid">docs.couchdb.org/en/stable/api/document/common.html#put--db-docid</a>
+	 * <p>
 	 * Puts the document into the database with the given id.
-	 * @param revision The revision of the existing document or null if this is a new document. This could also be null if you put the revision in the body.
+	 * <p>
+	 * Note: Not necessarily compatible with PouchDB.
+	 * @param eTagHeaderValue The {@link me.retrodaredevil.couchdbjava.tag.DocumentEntityTag#getRawValue()} of the existing document or null if this is a new document. This could also be null if you put the revision in the body.
 	 */
 	@PUT("{docid}")
-	Call<DocumentResponse.Body> putDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String revision, @Body RequestBody jsonRequestBody); // TODO make If-Match compatible with PouchDB
+	Call<DocumentResponse.Body> putDocumentWithIfMatch(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String eTagHeaderValue, @Body RequestBody jsonRequestBody);
+
+	/**
+	 * @see {@link #putDocumentWithIfMatch(String, String, RequestBody)}
+	 */
+	@PUT("{docid}")
+	Call<DocumentResponse.Body> putDocumentWithRevQuery(@Path(value = "docid", encoded = true) String docid, @Query("rev") String revision, @Body RequestBody jsonRequestBody);
 
 	@DELETE("{docid}")
 	Call<DocumentResponse.Body> deleteDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String revision); // TODO make If-Match compatible with PouchDB

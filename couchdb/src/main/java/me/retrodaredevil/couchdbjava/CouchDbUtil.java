@@ -63,7 +63,7 @@ public final class CouchDbUtil {
 		}
 		return urlEncode(documentId);
 	}
-	public static String encodeETagHeader(String revision) {
+	private static String encodeETagHeader(String revision) {
 		requireNonNull(revision);
 		return '"' + revision + '"';
 	}

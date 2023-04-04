@@ -88,8 +88,11 @@ public final class DocumentEntityTag {
 		}
 		return parseETag(eTag);
 	}
-	public static DocumentEntityTag createFromRevision(String revision) {
-		return new DocumentEntityTag('"' + revision + '"', false, revision);
+	public static DocumentEntityTag fromRevision(String revision) {
+		if (revision.length() < 34) { // minimum length of a revision is 34
+			throw new IllegalArgumentException("Revision length is too small! revision: " + revision);
+		}
+		return new DocumentEntityTag(CouchDbUtil.encodeRevisionForHeader(revision), false, revision);
 	}
 
 }

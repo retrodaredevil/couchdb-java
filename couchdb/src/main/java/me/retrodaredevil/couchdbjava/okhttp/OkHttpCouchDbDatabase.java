@@ -169,22 +169,29 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 			DocumentResponse.Body body = requireNonNull(response.body(), "Response was successful");
 			// We do not expect this response to have an ETag header
 			// Also, this method does not work on PouchDB, so we can freely assume that using a DocumentEntityTag with isRevision() == true is safe.
-			return DocumentResponse.create(body, DocumentEntityTag.createFromRevision(body.getRev()));
+			return DocumentResponse.create(body, DocumentEntityTag.fromRevision(body.getRev()));
 		});
 	}
 
 	@Override
 	public DocumentResponse putDocument(String id, JsonData jsonData) throws CouchDbException {
-		instance.preAuthorize();
-		return instance.executeAndHandle(service.putDocument(encodeDocumentId(id), null, OkHttpUtil.createJsonRequestBody(jsonData)), OkHttpCouchDbDatabase::transformDocumentResponse);
+		return updateDocument(id, null, jsonData, false);
 	}
 
-
 	@Override
-	public DocumentResponse updateDocument(String id, String revision, JsonData jsonData) throws CouchDbException {
+	public DocumentResponse updateDocument(String id, DocumentEntityTag eTag, JsonData jsonData, boolean forceETagUse) throws CouchDbException {
 		requireNonNull(id);
 		instance.preAuthorize();
-		return instance.executeAndHandle(service.putDocument(requireNonNull(encodeDocumentId(id)), encodeRevisionForHeader(revision), OkHttpUtil.createJsonRequestBody(jsonData)), OkHttpCouchDbDatabase::transformDocumentResponse);
+		if (eTag != null) {
+			if (eTag.isWeak() || forceETagUse) {
+				return instance.executeAndHandle(service.putDocumentWithIfMatch(encodeDocumentId(id), eTag.getRawValue(), OkHttpUtil.createJsonRequestBody(jsonData)), OkHttpCouchDbDatabase::transformDocumentResponse);
+			}
+			// for revision ETags we prefer the rev query parameter because PouchDB will always be OK with that
+			return instance.executeAndHandle(service.putDocumentWithRevQuery(encodeDocumentId(id), eTag.getValue(), OkHttpUtil.createJsonRequestBody(jsonData)), OkHttpCouchDbDatabase::transformDocumentResponse);
+		}
+		// while this method name is updateDocument, we actually also have logic for putDocument here
+		// using WithIfMatch or WithRevQuery does not matter here because both are identical when not including a revision/ETag
+		return instance.executeAndHandle(service.putDocumentWithIfMatch(encodeDocumentId(id), null, OkHttpUtil.createJsonRequestBody(jsonData)), OkHttpCouchDbDatabase::transformDocumentResponse);
 	}
 
 	@Override
@@ -202,7 +209,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 
 	@Override
 	public DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException {
-		return getDocumentIfUpdated(id, DocumentEntityTag.createFromRevision(revision));
+		return getDocumentIfUpdated(id, DocumentEntityTag.fromRevision(revision));
 	}
 
 	@Override

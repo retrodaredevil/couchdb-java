@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
@@ -38,7 +39,7 @@ public class DocumentUpdateTest {
 		DocumentEntityTag originalETag = originalResponse.getETag();
 		assertTrue(originalETag.isRevision()); // also true for PouchDB for recently created documents
 		assertEquals(originalRevision, originalETag.getValue());
-		assertEquals(DocumentEntityTag.createFromRevision(originalRevision), originalETag);
+		assertEquals(DocumentEntityTag.fromRevision(originalRevision), originalETag);
 		assertEquals("my_id", documentId);
 
 		try {
@@ -47,9 +48,7 @@ public class DocumentUpdateTest {
 		} catch (CouchDbUpdateConflictException expected) {
 		}
 
-		final DocumentEntityTag actualOriginalETag;
 		if (databaseService == DatabaseService.COUCHDB) {
-			actualOriginalETag = originalETag;
 			try {
 				database.getDocumentIfUpdated(documentId, originalETag);
 				fail();
@@ -59,9 +58,10 @@ public class DocumentUpdateTest {
 			// When an If-Match or If-None-Match header is sent with the revision, it will never match.
 			// So in this case, If-None-Match would be true, so a response will be sent back
 			// We assert that we receive that response and are basically documenting how we expect PouchDB to behave here.
-			DocumentData data = database.getDocumentIfUpdated(documentId, DocumentEntityTag.createFromRevision(originalRevision));
+			DocumentData data = database.getDocumentIfUpdated(documentId, DocumentEntityTag.fromRevision(originalRevision));
 			assertEquals(originalRevision, data.getRevision());
 			assertTrue(data.getETag().isWeak());
+
 
 			// When we send the weak ETag along, we expect PouchDB to match the weak ETag values
 			try {
@@ -69,12 +69,42 @@ public class DocumentUpdateTest {
 				fail();
 			} catch (CouchDbNotModifiedException expected) {
 			}
-			actualOriginalETag = data.getETag();
-		}
 
-		// TODO update document
-		// the above logic figured out the ETag needed to update the document.
-//		DocumentResponse updateResponse = database.putDocument("my_id", new StringJsonData("{\"test\": 44}"));
+			// let's confirm that trying to update a document with a revision ETag does not work
+			try {
+				database.updateDocument(documentId, originalETag, new StringJsonData("{\"test\": 44}"), true); // remember originalETag is a revision ETag
+				fail();
+			} catch (CouchDbUpdateConflictException expected) {
+			}
+			// let's confirm (the weird) case that using a weak ETag from a GET request does not work for updating a document
+			//   (PouchDB has some weird thing going on)
+			final DocumentEntityTag theETagThatYouThinkWouldWorkBecauseYaKnowPouchDbGaveItToUs;
+			try {
+				// Yes, you would think we should assign actualOriginalTag to data.getETag(), but PouchDB doesn't work that way for some reason
+				database.updateDocument(documentId, data.getETag(), new StringJsonData("{\"test\": 44}"), true);
+				fail();
+				throw new AssertionError(); // included here so that the compiler understands the actual code flow
+			} catch (CouchDbUpdateConflictException expected) {
+				theETagThatYouThinkWouldWorkBecauseYaKnowPouchDbGaveItToUs = requireNonNull(expected.getResponseETag(), "We always expect a PouchDB server to include the ETag header, even in a failed PUT request.");
+			}
+			try {
+				// Above we talked about weird PouchDB behavior.
+				//   I'm convinced that this behavior demonstrated is a bug, or maybe PouchDB just never ever supports the If-Match header
+				database.updateDocument(documentId, theETagThatYouThinkWouldWorkBecauseYaKnowPouchDbGaveItToUs, new StringJsonData("{\"test\": 44}"), true);
+			} catch (CouchDbUpdateConflictException expected) {
+				assertEquals(theETagThatYouThinkWouldWorkBecauseYaKnowPouchDbGaveItToUs, expected.getResponseETag());
+			}
+		} else throw new AssertionError();
+
+		// show that updating a document with rev query parameter works on all databases
+		DocumentResponse updateResponse = database.updateDocument(documentId, originalRevision, new StringJsonData("{\"test\": 44}"));
+		assertTrue(updateResponse.getRev().startsWith("2-"));
+
+		if (databaseService == DatabaseService.COUCHDB) {
+			// Using the If-Match header on CouchDB should work
+			DocumentResponse secondUpdateResponse = database.updateDocument(documentId, updateResponse.getETag(), new StringJsonData("{\"test\": 44}"), true);
+			assertTrue(secondUpdateResponse.getRev().startsWith("3-"));
+		}
 	}
 
 }

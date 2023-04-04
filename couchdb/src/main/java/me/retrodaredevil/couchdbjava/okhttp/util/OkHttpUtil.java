@@ -7,6 +7,8 @@ import me.retrodaredevil.couchdbjava.CouchDbStatusCode;
 import me.retrodaredevil.couchdbjava.exception.*;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.response.ErrorResponse;
+import me.retrodaredevil.couchdbjava.tag.DocumentEntityTag;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -58,7 +60,7 @@ public final class OkHttpUtil {
 			throw new IllegalArgumentException("This response is successful!");
 		}
 		ErrorResponse error = parseErrorResponse(response);
-		return createException(error, response.code());
+		return createException(error, response.code(), response.headers());
 	}
 	public static CouchDbException createExceptionFromResponse(retrofit2.Response<?> response) {
 		if (response.isSuccessful()) {
@@ -66,13 +68,15 @@ public final class OkHttpUtil {
 		}
 		ErrorResponse error = parseErrorResponse(response);
 
-		return createException(error, response.code());
+		return createException(error, response.code(), response.headers());
 	}
-	private static CouchDbException createException(ErrorResponse error, int code) {
+	private static CouchDbException createException(ErrorResponse error, int code, Headers headers) {
 		String additionalString = "";
 		if (error != null) {
 			additionalString = " error: " + error.getError() + " reason: " + error.getReason();
 		}
+		String rawETagValue = headers.get("ETag"); // This header sometimes included in PouchDB responses, but never in CouchDB responses
+		DocumentEntityTag eTag = rawETagValue == null ? null : DocumentEntityTag.parseETag(rawETagValue);
 		// https://docs.couchdb.org/en/stable/api/basics.html#http-status-codes
 		switch(code) {
 			case CouchDbStatusCode.NOT_MODIFIED:
@@ -82,7 +86,7 @@ public final class OkHttpUtil {
 			case CouchDbStatusCode.NOT_FOUND:
 				return new CouchDbNotFoundException("Got 'not found'!" + additionalString, error);
 			case CouchDbStatusCode.UPDATE_CONFLICT:
-				return new CouchDbUpdateConflictException("Update conflict!" + additionalString, error);
+				return new CouchDbUpdateConflictException("Update conflict!" + additionalString, error, eTag);
 			case CouchDbStatusCode.BAD_REQUEST:
 				return new CouchDbBadRequestException("Bad request!" + additionalString, error);
 			case CouchDbStatusCode.INTERNAL_SERVER_ERROR:
