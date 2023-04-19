@@ -227,7 +227,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 
 	@Override
 	public DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException {
-		return getDocumentIfUpdated(id, DocumentEntityTag.fromRevision(revision));
+		return getDocumentIfUpdated(id, revision == null ? null : DocumentEntityTag.fromRevision(revision));
 	}
 
 	@Override
