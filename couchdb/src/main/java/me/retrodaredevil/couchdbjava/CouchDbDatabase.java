@@ -77,7 +77,7 @@ public interface CouchDbDatabase extends CouchDbShared {
 	 * @throws CouchDbException May represent a connection error or that a document wasn't found, permission error, etc.
 	 */
 	default DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException {
-		return getDocumentIfUpdated(id, DocumentEntityTag.fromRevision(revision));
+		return getDocumentIfUpdated(id, revision == null ? null : DocumentEntityTag.fromRevision(revision));
 	}
 
 	DocumentData getDocumentIfUpdated(String id, DocumentEntityTag eTag) throws CouchDbException;

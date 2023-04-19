@@ -226,11 +226,6 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException {
-		return getDocumentIfUpdated(id, revision == null ? null : DocumentEntityTag.fromRevision(revision));
-	}
-
-	@Override
 	public DocumentData getDocumentIfUpdated(String id, @Nullable DocumentEntityTag eTag) throws CouchDbException {
 		// https://docs.couchdb.org/en/stable/api/document/common.html#get--db-docid
 		instance.preAuthorize();
