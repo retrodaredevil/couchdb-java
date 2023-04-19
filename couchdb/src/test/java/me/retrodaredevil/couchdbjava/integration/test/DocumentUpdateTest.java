@@ -104,6 +104,10 @@ public class DocumentUpdateTest {
 			// Using the If-Match header on CouchDB should work
 			DocumentResponse secondUpdateResponse = database.updateDocument(documentId, updateResponse.getETag(), new StringJsonData("{\"test\": 44}"), true);
 			assertTrue(secondUpdateResponse.getRev().startsWith("3-"));
+			String fetchedRevision = database.getCurrentRevision(documentId);
+			assertEquals(secondUpdateResponse.getRev(), fetchedRevision);
+		} else if (databaseService == DatabaseService.POUCHDB) {
+			assertThrows(UnsupportedOperationException.class, () -> database.getCurrentRevision(documentId));
 		}
 	}
 

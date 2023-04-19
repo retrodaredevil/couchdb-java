@@ -81,7 +81,19 @@ public interface CouchDbDatabase extends CouchDbShared {
 	}
 
 	DocumentData getDocumentIfUpdated(String id, DocumentEntityTag eTag) throws CouchDbException;
-	String getCurrentRevision(String id) throws CouchDbException;
+
+	/**
+	 * @throws UnsupportedOperationException Thrown if the response received does not contain a revision ETag.
+	 * You should not catch this exception. If you expect this be possibly thrown, you should use {@link #getCurrentETag(String)} instead.
+	 */
+	default String getCurrentRevision(String id) throws CouchDbException {
+		DocumentEntityTag eTag = getCurrentETag(id);
+		if (eTag.isRevision()) {
+			return eTag.getValue();
+		}
+		throw new UnsupportedOperationException("ETag is not a revision ETag!");
+	}
+	DocumentEntityTag getCurrentETag(String id) throws CouchDbException;
 
 	DocumentResponse copyToNewDocument(String id, String newDocumentId) throws CouchDbException;
 	DocumentResponse copyFromRevisionToNewDocument(String id, String revision, String newDocumentId) throws CouchDbException;

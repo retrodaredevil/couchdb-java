@@ -274,7 +274,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public String getCurrentRevision(String id) throws CouchDbException {
+	public DocumentEntityTag getCurrentETag(String id) throws CouchDbException {
 		instance.preAuthorize();
 		Response response = instance.executeCall(instance.getClient().newCall(
 				new Request.Builder()
@@ -283,10 +283,12 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 						.build()
 		));
 		if (response.isSuccessful()) {
-			return getRevision(response);
+			return DocumentEntityTag.fromDocumentResponse(response);
 		}
 		throw OkHttpUtil.createExceptionFromResponse(response);
+
 	}
+
 	@Deprecated
 	private String getRevision(Response response) throws CouchDbException {
 		// TODO ETag value in PouchDB is different than CouchDB.
