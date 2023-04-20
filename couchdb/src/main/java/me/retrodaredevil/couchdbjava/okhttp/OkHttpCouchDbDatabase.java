@@ -479,6 +479,12 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		return instance.executeAndHandle(service.deleteAttachment(documentId, attachmentName, documentRevision, batchString), OkHttpCouchDbDatabase::transformDocumentResponseOptionalETag);
 	}
 
+	@Override
+	public void compact() throws CouchDbException {
+		instance.preAuthorize();
+		instance.executeAndHandle(service.compact());
+	}
+
 	// endregion
 
 	private class OkHttpCouchDbShared implements CouchDbShared {

@@ -119,6 +119,7 @@ public interface CouchDbDatabaseService {
 	 * https://docs.couchdb.org/en/stable/api/database/compact.html
 	 * https://docs.couchdb.org/en/stable/maintenance/compaction.html#database-compaction
 	 */
+	@Headers({"Content-Type: application/json"})
 	@POST("_compact")
 	Call<SimpleStatus> compact();
 

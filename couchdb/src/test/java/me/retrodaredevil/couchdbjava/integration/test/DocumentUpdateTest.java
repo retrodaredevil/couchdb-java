@@ -109,6 +109,9 @@ public class DocumentUpdateTest {
 		} else if (databaseService == DatabaseService.POUCHDB) {
 			assertThrows(UnsupportedOperationException.class, () -> database.getCurrentRevision(documentId));
 		}
+
+		// test database compacting here since we have a couple of revisions
+		database.compact();
 	}
 
 }

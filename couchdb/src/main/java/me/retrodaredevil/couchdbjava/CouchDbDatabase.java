@@ -131,6 +131,8 @@ public interface CouchDbDatabase extends CouchDbShared {
 		return deleteAttachment(documentId, attachmentName, documentRevision, false);
 	}
 
+	void compact() throws CouchDbException;
+
 	// TODO implement:
 	// _local_docs: https://docs.couchdb.org/en/stable/api/local.html#db-local-docs
 	// _local/id: https://docs.couchdb.org/en/stable/api/local.html#db-local-id
