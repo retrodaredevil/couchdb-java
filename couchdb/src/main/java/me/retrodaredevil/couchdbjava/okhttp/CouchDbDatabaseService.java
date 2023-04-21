@@ -123,6 +123,15 @@ public interface CouchDbDatabaseService {
 	@POST("_compact")
 	Call<SimpleStatus> compact();
 
+	@Headers({"Content-Type: application/json"})
+	@POST("_compact/{design-doc}")
+	Call<SimpleStatus> compactDesign(@Path("design-doc") String designDocument);
+
+	@GET("_revs_limit")
+	Call<Integer> getRevsLimit();
+	@PUT("_revs_limit")
+	Call<SimpleStatus> setRevsLimit(@Body int revsLimit);
+
 
 	// TODO active tasks: https://docs.couchdb.org/en/stable/api/server/common.html#api-server-active-tasks
 }
