@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
+import me.retrodaredevil.couchdbjava.exception.CouchDbBadRequestException;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
+import me.retrodaredevil.couchdbjava.exception.CouchDbNotFoundException;
 import me.retrodaredevil.couchdbjava.integration.DatabaseService;
 import me.retrodaredevil.couchdbjava.integration.TestUtil;
 import me.retrodaredevil.couchdbjava.json.JsonData;
@@ -16,13 +18,10 @@ import me.retrodaredevil.couchdbjava.request.ViewQueryParamsBuilder;
 import me.retrodaredevil.couchdbjava.response.DocumentResponse;
 import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
 public class IncludeDocsViewTest {
@@ -67,5 +66,13 @@ public class IncludeDocsViewTest {
 		assertEquals(documentId, objectNode.get("_id").asText());
 		assertEquals(revision, objectNode.get("_rev").asText());
 		assertEquals(43, objectNode.get("test").asInt());
+
+		if (databaseService == DatabaseService.COUCHDB) {
+			database.compactDesign("test_design"); // confirm that compact endpoint can be reached
+			assertThrows(CouchDbNotFoundException.class, () -> database.compactDesign("non-existent-design"));
+		} else if (databaseService == DatabaseService.POUCHDB) {
+			// PouchDB does not support compacting a design
+			assertThrows(CouchDbBadRequestException.class, () -> database.compactDesign("test_design"));
+		}
 	}
 }

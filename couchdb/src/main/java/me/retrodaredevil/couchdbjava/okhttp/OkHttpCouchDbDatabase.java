@@ -119,6 +119,12 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		if (databaseCreationOption.getPartitioned() != null) {
 			map.put("partitioned", databaseCreationOption.getPartitioned());
 		}
+		if (databaseCreationOption.getRevLimit() != null) {
+			map.put("revs_limit", databaseCreationOption.getRevLimit());
+		}
+		if (databaseCreationOption.getAutoCompaction() != null) {
+			map.put("auto_compaction", databaseCreationOption.getAutoCompaction());
+		}
 		instance.executeAndHandle(service.createDatabase(map));
 	}
 
@@ -478,6 +484,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		String batchString = batch ? "ok" : null;
 		return instance.executeAndHandle(service.deleteAttachment(documentId, attachmentName, documentRevision, batchString), OkHttpCouchDbDatabase::transformDocumentResponseOptionalETag);
 	}
+	// endregion
 
 	@Override
 	public void compact() throws CouchDbException {
@@ -485,7 +492,24 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		instance.executeAndHandle(service.compact());
 	}
 
-	// endregion
+	@Override
+	public void compactDesign(String designDocument) throws CouchDbException {
+		requireNonNull(designDocument);
+		instance.preAuthorize();
+		instance.executeAndHandle(service.compactDesign(designDocument));
+	}
+
+	@Override
+	public int getRevsLimit() throws CouchDbException {
+		instance.preAuthorize();
+		return instance.executeAndHandle(service.getRevsLimit());
+	}
+
+	@Override
+	public void setRevsLimit(int revsLimit) throws CouchDbException {
+		instance.preAuthorize();
+		instance.executeAndHandle(service.setRevsLimit(revsLimit));
+	}
 
 	private class OkHttpCouchDbShared implements CouchDbShared {
 		private final String prefix;

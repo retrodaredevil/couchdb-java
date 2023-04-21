@@ -132,6 +132,20 @@ public interface CouchDbDatabase extends CouchDbShared {
 	}
 
 	void compact() throws CouchDbException;
+	void compactDesign(String designDocument) throws CouchDbException;
+
+	/**
+	 * Note: Not supported on PouchDB
+	 * @throws CouchDbException
+	 * @throws me.retrodaredevil.couchdbjava.exception.CouchDbNotFoundException Only on PouchDB
+	 */
+	int getRevsLimit() throws CouchDbException;
+	/**
+	 * Note: Not supported on PouchDB
+	 * @throws CouchDbException
+	 * @throws me.retrodaredevil.couchdbjava.exception.CouchDbNotFoundException Only on PouchDB
+	 */
+	void setRevsLimit(int revsLimit) throws CouchDbException;
 
 	// TODO implement:
 	// _local_docs: https://docs.couchdb.org/en/stable/api/local.html#db-local-docs

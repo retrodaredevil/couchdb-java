@@ -17,8 +17,6 @@ import me.retrodaredevil.couchdbjava.response.ErrorResponse;
 import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class PartitionedDatabaseTest {
 		// partitioned databases not available on PouchDB, so only test on CouchDB
 		CouchDbInstance instance = TestUtil.createInstance(DatabaseService.COUCHDB);
 		CouchDbDatabase database = instance.getDatabase(DATABASE);
-		database.create(new DatabaseCreationOption(null, null, true));
+		database.create(DatabaseCreationOption.builder().partitioned().build());
 		assertTrue(database.getDatabaseInfo().getProperties().isPartitioned());
 
 		try {
