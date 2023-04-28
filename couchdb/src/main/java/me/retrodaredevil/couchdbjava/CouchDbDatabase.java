@@ -29,6 +29,9 @@ public interface CouchDbDatabase extends CouchDbShared {
 	default boolean createIfNotExists() throws CouchDbException { return createIfNotExists(DatabaseCreationOption.createDefault()); }
 	void deleteDatabase() throws CouchDbException;
 
+	/**
+	 * Note: As of 2023.04.21 this does not work on PouchDB
+	 */
 	DatabaseInfo getDatabaseInfo() throws CouchDbException;
 
 	/**

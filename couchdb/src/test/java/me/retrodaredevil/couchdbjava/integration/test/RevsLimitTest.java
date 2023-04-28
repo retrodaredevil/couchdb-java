@@ -37,6 +37,5 @@ public class RevsLimitTest {
 			database.create(DatabaseCreationOption.builder().build());
 			assertThrows(CouchDbNotFoundException.class, () -> database.getRevsLimit());
 		}
-		database.getDatabaseInfo();
 	}
 }
