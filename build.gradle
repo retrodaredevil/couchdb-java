@@ -2,23 +2,22 @@ import java.time.Duration
 
 buildscript {
     ext {
-        junit5Version = '5.7.2' // https://junit.org/junit5/
-        junit5PlatformVersion = '1.7.2'
+        junit5Version = '5.11.3' // https://junit.org/junit5/
+        junit5PlatformVersion = '1.11.3'
 
-        slf4jVersion = '1.7.30' // http://www.slf4j.org/download.html
+        slf4jVersion = '2.0.16' // http://www.slf4j.org/download.html
+        // TODO bump Jackson version, but also consider if we care about keeping Android compatibility for SDK versions < 26
         // https://github.com/FasterXML/jackson/wiki/Jackson-Releases
         jacksonVersion = '2.13.0' // https://github.com/FasterXML/jackson-databind/releases
         // retrofit is why we need allow-opens. context: https://stackoverflow.com/questions/60915381/retrofit2-maven-project-illegal-reflective-access-warning // https://github.com/square/retrofit/issues/3341
-        retrofitVersion = "2.9.0" // https://github.com/square/retrofit/releases
-        okhttpVersion = "4.9.1" // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-        dockerComposePluginVersion = "0.16.12"
+        retrofitVersion = "2.11.0" // https://github.com/square/retrofit/releases
+        okhttpVersion = "4.12.0" // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+        dockerComposePluginVersion = "0.17.11" // https://github.com/avast/gradle-docker-compose-plugin/releases
     }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "com.avast.gradle:gradle-docker-compose-plugin:$dockerComposePluginVersion"
-    }
+}
+
+plugins {
+    id "com.avast.gradle.docker-compose" version "$dockerComposePluginVersion"
 }
 
 subprojects {
@@ -69,6 +68,6 @@ subprojects {
 }
 
 wrapper {
-    gradleVersion = '6.9'
+    gradleVersion = '8.11.1'
     distributionType = Wrapper.DistributionType.ALL
 }
