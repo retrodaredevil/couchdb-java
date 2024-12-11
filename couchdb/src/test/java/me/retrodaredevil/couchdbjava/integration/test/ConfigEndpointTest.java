@@ -23,7 +23,7 @@ public class ConfigEndpointTest {
 
 	@ParameterizedTest
 	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
-	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException {
+	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException, InterruptedException {
 		CouchDbInstance instance = TestUtil.createInstance(databaseService);
 		MembershipResponse membership = instance.membership();
 		// the configured CouchDB from the compose file is not clustered and even if it was it should only handle 1 node
@@ -49,10 +49,13 @@ public class ConfigEndpointTest {
 			assertEquals("0.0.0.0", config.queryValue(httpSectionName, "bind_address"));
 		}
 		assertEquals("", config.putValue("admins", "newadmin", "coolpass"));
-		assertTrue(config.queryValue("admins", "newadmin").startsWith("-pbkdf2-"));
+		// NOTE: As of CouchDB 3.4, values under the "admins" section are not hashed immediately, hence this sleep // https://github.com/apache/couchdb/issues/5358
+		Thread.sleep(500);
+		// NOTE: As of CouchDB 3.4, hashed passwords may be hashed differently. The "-pbkdf2-" prefix is no longer reliable, but "-pbkdf2" prefix is
+		assertTrue(config.queryValue("admins", "newadmin").startsWith("-pbkdf2"));
 		if (databaseService == DatabaseService.COUCHDB) {
 			// only for CouchDB because PouchDB gives us a "unknown_config_value" error, which doesn't make any sense
-			assertTrue(config.deleteValue("admins", "newadmin").startsWith("-pbkdf2-"));
+			assertTrue(config.deleteValue("admins", "newadmin").startsWith("-pbkdf2"));
 		}
 	}
 }

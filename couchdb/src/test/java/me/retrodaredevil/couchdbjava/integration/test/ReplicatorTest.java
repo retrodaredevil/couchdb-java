@@ -65,7 +65,8 @@ public class ReplicatorTest {
 		}
 
 
-		for (int i = 0; i < 15 && !target.exists(); i++) { // 15 iterations is ~7.5 seconds maximum
+		// NOTE: For CouchDB 3.3 and lower, we were able to get away with a timeout of about 7.5 seconds, but for CouchDB 3.4 we increased that
+		for (int i = 0; i < 20 && !target.exists(); i++) { // 20 iterations is ~10 seconds maximum
 			//noinspection BusyWait
 			Thread.sleep(500);
 		}

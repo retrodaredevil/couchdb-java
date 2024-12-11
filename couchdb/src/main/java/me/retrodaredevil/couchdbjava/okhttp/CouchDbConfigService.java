@@ -12,7 +12,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
- * @see <a href="ttps://docs.couchdb.org/en/stable/api/server/configuration.html#accessing-the-local-node-s-configuration ">docs.couchdb.org/en/stable/api/server/configuration.html#accessing-the-local-node-s-configuration</a>
+ * @see <a href="https://docs.couchdb.org/en/stable/api/server/configuration.html#accessing-the-local-node-s-configuration ">docs.couchdb.org/en/stable/api/server/configuration.html#accessing-the-local-node-s-configuration</a>
  */
 public interface CouchDbConfigService {
 	@HEAD("./")

@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   couchdb:
     image: 'apache/couchdb:3'
