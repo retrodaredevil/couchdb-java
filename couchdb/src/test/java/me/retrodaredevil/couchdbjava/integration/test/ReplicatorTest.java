@@ -65,8 +65,10 @@ public class ReplicatorTest {
 		}
 
 
-		// NOTE: For CouchDB 3.3 and lower, we were able to get away with a timeout of about 7.5 seconds, but for CouchDB 3.4 we increased that
-		for (int i = 0; i < 20 && !target.exists(); i++) { // 20 iterations is ~10 seconds maximum
+		// NOTE: For CouchDB 3.3 and lower, we were able to get away with a timeout of about 7.5 seconds
+		//   For CouchDB 3.4 we need about a 10-second timeout.
+		//   I've increased that timeout to 20 seconds, as it seems integration tests will sometimes fail even with a 10 second timeout
+		for (int i = 0; i < 40 && !target.exists(); i++) { // 40 iterations is ~20 seconds maximum
 			//noinspection BusyWait
 			Thread.sleep(500);
 		}
