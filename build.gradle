@@ -22,6 +22,7 @@ plugins {
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'maven-publish' // necessary for jitpack
     apply plugin: 'docker-compose'
 
     sourceCompatibility = 1.8
@@ -64,6 +65,19 @@ subprojects {
         useComposeFiles = ['../testing/docker-compose.yml']
         isRequiredBy integration
         waitForTcpPortsTimeout = Duration.ofMinutes(1)
+    }
+
+    publishing { // necessary for jitpack
+        publications {
+            mavenJava(MavenPublication) {
+                // thanks https://stackoverflow.com/a/68515859/5434860
+                groupId = "${group}"
+                artifactId = "${project.name}"
+                version = "${version}"
+
+                from project.components.java
+            }
+        }
     }
 }
 
