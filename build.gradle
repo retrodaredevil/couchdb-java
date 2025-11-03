@@ -12,7 +12,7 @@ buildscript {
         // retrofit is why we need allow-opens. context: https://stackoverflow.com/questions/60915381/retrofit2-maven-project-illegal-reflective-access-warning // https://github.com/square/retrofit/issues/3341
         retrofitVersion = "2.11.0" // https://github.com/square/retrofit/releases
         okhttpVersion = "4.12.0" // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-        dockerComposePluginVersion = "0.17.11" // https://github.com/avast/gradle-docker-compose-plugin/releases
+        dockerComposePluginVersion = "0.17.19" // https://github.com/avast/gradle-docker-compose-plugin/releases
     }
 }
 
@@ -25,8 +25,10 @@ subprojects {
     apply plugin: 'maven-publish' // necessary for jitpack
     apply plugin: 'docker-compose'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    java {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
     repositories {
         maven { url "https://repo.maven.apache.org/maven2" }
     }
@@ -52,11 +54,11 @@ subprojects {
             options.compilerArgs << "-Xlint:deprecation"
         }
     }
-    task integration(type: Test) {
+    tasks.register('integration', Test) {
         useJUnitPlatform {
             includeTags 'integration'
         }
-        if(JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+        if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
             // If we don't have this, we get warnings for something about retrofit2.Platform
             jvmArgs "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED"
         }
