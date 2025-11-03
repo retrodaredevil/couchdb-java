@@ -33,7 +33,7 @@ public class OkHttpCouchDbNode implements CouchDbNode {
 				.addConverterFactory(ScalarsConverterFactory.create())
 				.build()
 				;
-		System.out.println(retrofit.baseUrl());
+//		System.out.println(retrofit.baseUrl());
 		service = retrofit.create(CouchDbNodeService.class);
 	}
 
