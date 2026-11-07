@@ -16,7 +16,7 @@ buildscript {
 
 plugins {
     id "com.avast.gradle.docker-compose" version "$dockerComposePluginVersion"
-    id "net.ltgt.errorprone" version "5.1.1" apply false
+    id "net.ltgt.errorprone" version "5.2.0" apply false
 }
 
 subprojects {
@@ -60,9 +60,9 @@ subprojects {
         testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
 
         api 'org.jspecify:jspecify:1.0.1'
-        errorprone 'com.google.errorprone:error_prone_core:2.50.0'
-        errorprone 'com.uber.nullaway:nullaway:0.14.2'
-        compileOnly 'com.google.errorprone:error_prone_annotations:2.50.0'
+        errorprone 'com.google.errorprone:error_prone_core:2.52.0'
+        errorprone 'com.uber.nullaway:nullaway:0.14.3'
+        compileOnly 'com.google.errorprone:error_prone_annotations:2.52.0'
     }
     tasks.withType(JavaCompile).configureEach {
         options.errorprone {
@@ -190,6 +190,6 @@ subprojects {
 }
 
 wrapper {
-    gradleVersion = '8.11.1'
+    gradleVersion = '9.8.2'
     distributionType = Wrapper.DistributionType.ALL
 }
