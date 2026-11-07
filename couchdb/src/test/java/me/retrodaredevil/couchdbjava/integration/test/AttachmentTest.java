@@ -17,6 +17,7 @@ import okio.Okio;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
+@NullMarked
 public class AttachmentTest {
 
 	private static final String DATABASE = "test_attachment_database";

@@ -15,6 +15,7 @@ import me.retrodaredevil.couchdbjava.tag.DocumentEntityTag;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 
@@ -22,9 +23,9 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
+@NullMarked
 public class DocumentUpdateTest {
 	private static final String DATABASE = "test_document_update_database";
-
 
 	@ParameterizedTest
 	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
@@ -61,7 +62,6 @@ public class DocumentUpdateTest {
 			DocumentData data = database.getDocumentIfUpdated(documentId, DocumentEntityTag.fromRevision(originalRevision));
 			assertEquals(originalRevision, data.getRevision());
 			assertTrue(data.getETag().isWeak());
-
 
 			// When we send the weak ETag along, we expect PouchDB to match the weak ETag values
 			try {

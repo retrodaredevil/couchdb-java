@@ -34,11 +34,11 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Source;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -49,6 +49,7 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 import static me.retrodaredevil.couchdbjava.CouchDbUtil.*;
 
+@NullMarked
 public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	private static final String DATABASE_REGEX = "^[a-z][a-z0-9_$()+/-]*$";
 	private final String name;
@@ -119,7 +120,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 		if (databaseCreationOption.getPartitioned() != null) {
 			map.put("partitioned", databaseCreationOption.getPartitioned());
 		}
-		instance.executeAndHandle(service.createDatabase(map));
+		instance.executeAndHandleWithoutBody(service.createDatabase(map));
 	}
 
 	@Override
@@ -138,7 +139,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	@Override
 	public void deleteDatabase() throws CouchDbException {
 		instance.preAuthorize();
-		instance.executeAndHandle(service.deleteDatabase());
+		instance.executeAndHandleWithoutBody(service.deleteDatabase());
 	}
 
 	@Override
@@ -197,7 +198,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public DocumentResponse updateDocument(String id, DocumentEntityTag eTag, JsonData jsonData, boolean forceETagUse) throws CouchDbException {
+	public DocumentResponse updateDocument(String id, @Nullable DocumentEntityTag eTag, JsonData jsonData, boolean forceETagUse) throws CouchDbException {
 		requireNonNull(id);
 		instance.preAuthorize();
 		if (eTag != null) {
@@ -341,7 +342,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	@Override
 	public void setSecurity(DatabaseSecurity databaseSecurity) throws CouchDbException {
 		instance.preAuthorize();
-		instance.executeAndHandle(service.putSecurity(databaseSecurity));
+		instance.executeAndHandleWithoutBody(service.putSecurity(databaseSecurity));
 	}
 
 	@Override
@@ -408,7 +409,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public @NotNull AttachmentInfo getAttachmentInfo(@NotNull AttachmentGet attachmentGet) throws CouchDbException {
+	public AttachmentInfo getAttachmentInfo(AttachmentGet attachmentGet) throws CouchDbException {
 		Response response = doAttachmentRequest(attachmentGet, true);
 		if (response.isSuccessful()) {
 			return parseAttachmentInfo(response);
@@ -417,7 +418,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public @NotNull AttachmentData getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException {
+	public AttachmentData getAttachment(AttachmentGet attachmentGet) throws CouchDbException {
 		Response response = doAttachmentRequest(attachmentGet, false);
 		if (response.isSuccessful()) {
 			AttachmentInfo info = parseAttachmentInfo(response);
@@ -434,21 +435,20 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public @NotNull DocumentResponse putAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String documentRevision, @Nullable String contentType) throws CouchDbException {
+	public DocumentResponse putAttachment(String documentId, String attachmentName, Source dataSource, @Nullable String documentRevision, @Nullable String contentType) throws CouchDbException {
 		requireNonNull(documentId);
 		requireNonNull(attachmentName);
 		requireNonNull(dataSource);
 		instance.preAuthorize();
 		MediaType mediaType = contentType == null ? null : MediaType.get(contentType);
 		RequestBody body = new RequestBody() {
-			@Nullable
 			@Override
-			public MediaType contentType() {
+			public @Nullable MediaType contentType() {
 				return mediaType;
 			}
 
 			@Override
-			public void writeTo(@NotNull BufferedSink bufferedSink) throws IOException {
+			public void writeTo(BufferedSink bufferedSink) throws IOException {
 				bufferedSink.writeAll(dataSource);
 			}
 
@@ -470,7 +470,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	}
 
 	@Override
-	public @NotNull DocumentResponse deleteAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull String documentRevision, boolean batch) throws CouchDbException {
+	public DocumentResponse deleteAttachment(String documentId, String attachmentName, String documentRevision, boolean batch) throws CouchDbException {
 		requireNonNull(documentId);
 		requireNonNull(attachmentName);
 		requireNonNull(documentRevision);
@@ -483,14 +483,14 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	@Override
 	public void compact() throws CouchDbException {
 		instance.preAuthorize();
-		instance.executeAndHandle(service.compact());
+		instance.executeAndHandleWithoutBody(service.compact());
 	}
 
 	@Override
 	public void compactDesign(String designDocument) throws CouchDbException {
 		requireNonNull(designDocument);
 		instance.preAuthorize();
-		instance.executeAndHandle(service.compactDesign(designDocument));
+		instance.executeAndHandleWithoutBody(service.compactDesign(designDocument));
 	}
 
 	@Override
@@ -502,7 +502,7 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 	@Override
 	public void setRevsLimit(int revsLimit) throws CouchDbException {
 		instance.preAuthorize();
-		instance.executeAndHandle(service.setRevsLimit(revsLimit));
+		instance.executeAndHandleWithoutBody(service.setRevsLimit(revsLimit));
 	}
 
 	private class OkHttpCouchDbShared implements CouchDbShared {

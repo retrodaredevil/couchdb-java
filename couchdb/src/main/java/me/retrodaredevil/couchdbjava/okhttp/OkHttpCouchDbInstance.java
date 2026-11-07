@@ -22,6 +22,7 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class OkHttpCouchDbInstance implements CouchDbInstance {
 
 	private final OkHttpClient client;
@@ -43,8 +45,8 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 	private final OkHttpCouchDbDatabase usersDatabase;
 
 	public OkHttpCouchDbInstance(OkHttpClient client, HttpUrl url, OkHttpAuthHandler authHandler) {
-		requireNonNull(this.url = url);
-		requireNonNull(this.authHandler = authHandler);
+		this.url = requireNonNull(url);
+		this.authHandler = requireNonNull(authHandler);
 
 		OkHttpClient.Builder builder = client.newBuilder();
 		CookieJar cookieJar = authHandler.getCookieJar();
@@ -117,8 +119,18 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 		}
 	}
 	public <T> T executeAndHandle(retrofit2.Call<T> call) throws CouchDbException {
-		return executeAndHandle(call, retrofit2.Response::body);
+		retrofit2.Response<T> response = executeAndHandle(call, value -> value);
+		T body = response.body();
+		if (body == null) {
+			throw new CouchDbException("Successful response contained no body");
+		}
+		return body;
 	}
+	/** Executes a request whose successful response body is not needed. */
+	public void executeAndHandleWithoutBody(retrofit2.Call<?> call) throws CouchDbException {
+		executeAndHandle(call, response -> response);
+	}
+
 	public <T, U> U executeAndHandle(retrofit2.Call<T> call, Function<retrofit2.Response<T>, U> transform) throws CouchDbException {
 		retrofit2.Response<T> response = executeCall(call);
 		if (response.isSuccessful()) {
@@ -176,7 +188,6 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 				.build();
 		return new OkHttpCouchDbNode(name, nodeUrl, this);
 	}
-
 
 	@Override
 	public CouchDbDatabase getReplicatorDatabase() {

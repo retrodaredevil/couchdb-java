@@ -2,6 +2,8 @@ package me.retrodaredevil.couchdbjava.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +12,7 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class BulkGetRequest {
 	private final List<Doc> docs;
 
@@ -36,13 +39,12 @@ public class BulkGetRequest {
 		return docs;
 	}
 
-
 	public static class Doc {
 		private final String documentId;
-		private final String revision;
+		private final @Nullable String revision;
 
-		public Doc(String documentId, String revision) {
-			requireNonNull(this.documentId = documentId);
+		public Doc(String documentId, @Nullable String revision) {
+			this.documentId = requireNonNull(documentId);
 			this.revision = revision;
 		}
 		public Doc(String documentId) {
@@ -56,7 +58,7 @@ public class BulkGetRequest {
 
 		@JsonInclude(JsonInclude.Include.NON_NULL)
 		@JsonProperty("rev")
-		public String getRevision() {
+		public @Nullable String getRevision() {
 			return revision;
 		}
 	}

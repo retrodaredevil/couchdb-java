@@ -4,12 +4,14 @@ import me.retrodaredevil.couchdbjava.CouchDbConfig;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import okhttp3.HttpUrl;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class OkHttpCouchDbConfig implements CouchDbConfig {
 	private final String name;
 	private final OkHttpCouchDbInstance instance;
@@ -38,7 +40,7 @@ public class OkHttpCouchDbConfig implements CouchDbConfig {
 	@Override
 	public void test() throws CouchDbException {
 		instance.preAuthorize();
-		instance.executeAndHandle(service.checkExists());
+		instance.executeAndHandleWithoutBody(service.checkExists());
 	}
 
 	@Override
@@ -54,13 +56,13 @@ public class OkHttpCouchDbConfig implements CouchDbConfig {
 	}
 
 	@Override
-	public @NotNull String queryValue(String section, String key) throws CouchDbException {
+	public String queryValue(String section, String key) throws CouchDbException {
 		instance.preAuthorize();
 		return instance.executeAndHandle(service.queryValue(section, key));
 	}
 
 	@Override
-	public String putValue(String section, String key, String value) throws CouchDbException {
+	public String putValue(String section, String key, @Nullable String value) throws CouchDbException {
 		instance.preAuthorize();
 		if (value == null) {
 			return instance.executeAndHandle(service.delete(section, key));
@@ -71,6 +73,6 @@ public class OkHttpCouchDbConfig implements CouchDbConfig {
 	@Override
 	public void reload() throws CouchDbException {
 		instance.preAuthorize();
-		instance.executeAndHandle(service.reload());
+		instance.executeAndHandleWithoutBody(service.reload());
 	}
 }

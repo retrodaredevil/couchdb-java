@@ -4,10 +4,12 @@ import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.request.ViewQuery;
 import me.retrodaredevil.couchdbjava.request.ViewQueryParams;
 import me.retrodaredevil.couchdbjava.response.ViewResponse;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Represents functions that can be used on the root of a given database, or a particular partition of a given database
  */
+@NullMarked
 public interface CouchDbShared {
 
 	/**

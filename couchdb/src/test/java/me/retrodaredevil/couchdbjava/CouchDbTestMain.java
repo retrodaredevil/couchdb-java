@@ -15,8 +15,11 @@ import me.retrodaredevil.couchdbjava.response.SessionPostResponse;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class CouchDbTestMain {
+	private CouchDbTestMain() {}
 	private static final ObjectMapper MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
 	public static void main(String[] args) throws CouchDbException, JsonProcessingException {

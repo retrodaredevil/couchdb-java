@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.response.BulkGetResponse;
 import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class SolarThingBulkGetTest {
 	@Test
 	void test() throws JsonProcessingException {

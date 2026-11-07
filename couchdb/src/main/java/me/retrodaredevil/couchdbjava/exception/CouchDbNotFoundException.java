@@ -2,8 +2,10 @@ package me.retrodaredevil.couchdbjava.exception;
 
 import me.retrodaredevil.couchdbjava.CouchDbStatusCode;
 import me.retrodaredevil.couchdbjava.response.ErrorResponse;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class CouchDbNotFoundException extends CouchDbCodeException {
 	public CouchDbNotFoundException(@Nullable ErrorResponse errorResponse) {
 		super(CouchDbStatusCode.NOT_FOUND, errorResponse);

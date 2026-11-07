@@ -2,7 +2,9 @@ package me.retrodaredevil.couchdbjava.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class SimpleStatus {
 	private final boolean ok;
 

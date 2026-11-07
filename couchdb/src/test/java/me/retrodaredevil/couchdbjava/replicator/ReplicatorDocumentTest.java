@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.replicator.source.StringReplicatorSource;
 import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.NullMarked;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@NullMarked
 class ReplicatorDocumentTest {
 
 	@Test

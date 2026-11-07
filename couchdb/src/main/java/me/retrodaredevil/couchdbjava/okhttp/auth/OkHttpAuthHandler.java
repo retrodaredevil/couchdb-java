@@ -4,8 +4,10 @@ import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.okhttp.OkHttpCouchDbInstance;
 import okhttp3.CookieJar;
 import okhttp3.Request;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public interface OkHttpAuthHandler {
 	@Nullable CookieJar getCookieJar();
 

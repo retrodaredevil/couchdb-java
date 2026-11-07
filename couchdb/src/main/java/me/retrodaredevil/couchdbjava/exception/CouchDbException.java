@@ -1,5 +1,8 @@
 package me.retrodaredevil.couchdbjava.exception;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public class CouchDbException extends Exception {
 	public CouchDbException() {
 	}

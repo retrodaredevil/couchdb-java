@@ -1,9 +1,9 @@
 package me.retrodaredevil.couchdbjava.attachment;
-
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public enum ContentEncoding {
 	GZIP("gzip"),
 	COMPRESS("compress"),
@@ -19,7 +19,7 @@ public enum ContentEncoding {
 		this.name = name;
 	}
 
-	public static ContentEncoding fromName(@NotNull String name) {
+	public static ContentEncoding fromName(String name) {
 		requireNonNull(name);
 		for (ContentEncoding encoding : values()) {
 			if (encoding.name.equals(name)) {

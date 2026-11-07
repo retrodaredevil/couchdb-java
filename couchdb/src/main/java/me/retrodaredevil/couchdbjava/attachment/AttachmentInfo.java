@@ -1,6 +1,6 @@
 package me.retrodaredevil.couchdbjava.attachment;
-
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -9,26 +9,27 @@ import static java.util.Objects.requireNonNull;
 /**
  * Used in HEAD request do /db/doc/attachment: https://docs.couchdb.org/en/stable/api/document/attachments.html#db-doc-attachment
  */
+@NullMarked
 public final class AttachmentInfo {
 	private final AcceptRange acceptRange;
-	private final ContentEncoding contentEncoding;
+	private final @Nullable ContentEncoding contentEncoding;
 	private final int contentLength;
 	/** MD5 Binary digest */
 	private final String base64EncodedDigest;
 
 	public AttachmentInfo(
-			AcceptRange acceptRange, ContentEncoding contentEncoding, int contentLength, String base64EncodedDigest) {
-		requireNonNull(this.acceptRange = acceptRange);
+			AcceptRange acceptRange, @Nullable ContentEncoding contentEncoding, int contentLength, String base64EncodedDigest) {
+		this.acceptRange = requireNonNull(acceptRange);
 		this.contentEncoding = contentEncoding;
 		this.contentLength = contentLength;
-		requireNonNull(this.base64EncodedDigest = base64EncodedDigest);
+		this.base64EncodedDigest = requireNonNull(base64EncodedDigest);
 	}
 
-	public @NotNull AcceptRange getAcceptRange() {
+	public AcceptRange getAcceptRange() {
 		return acceptRange;
 	}
 
-	public ContentEncoding getContentEncoding() {
+	public @Nullable ContentEncoding getContentEncoding() {
 		return contentEncoding;
 	}
 
@@ -36,12 +37,12 @@ public final class AttachmentInfo {
 		return contentLength;
 	}
 
-	public @NotNull String getBase64EncodedDigest() {
+	public String getBase64EncodedDigest() {
 		return base64EncodedDigest;
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		AttachmentInfo that = (AttachmentInfo) o;

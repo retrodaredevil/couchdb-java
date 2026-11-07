@@ -13,10 +13,13 @@ import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.*;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 
+@NullMarked
 public interface CouchDbDatabaseService {
 
 	@HEAD("./")
@@ -56,25 +59,22 @@ public interface CouchDbDatabaseService {
 	 * @param eTagHeaderValue The {@link me.retrodaredevil.couchdbjava.tag.DocumentEntityTag#getRawValue()} of the existing document or null if this is a new document. This could also be null if you put the revision in the body.
 	 */
 	@PUT("{docid}")
-	Call<DocumentResponse.Body> putDocumentWithIfMatch(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String eTagHeaderValue, @Body RequestBody jsonRequestBody);
+	Call<DocumentResponse.Body> putDocumentWithIfMatch(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") @Nullable String eTagHeaderValue, @Body RequestBody jsonRequestBody);
 
 	/**
 	 * @see {@link #putDocumentWithIfMatch(String, String, RequestBody)}
 	 */
 	@PUT("{docid}")
-	Call<DocumentResponse.Body> putDocumentWithRevQuery(@Path(value = "docid", encoded = true) String docid, @Query("rev") String revision, @Body RequestBody jsonRequestBody);
+	Call<DocumentResponse.Body> putDocumentWithRevQuery(@Path(value = "docid", encoded = true) String docid, @Query("rev") @Nullable String revision, @Body RequestBody jsonRequestBody);
 
 	@DELETE("{docid}")
-	Call<DocumentResponse.Body> deleteDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") String revision); // TODO make If-Match compatible with PouchDB
-
+	Call<DocumentResponse.Body> deleteDocument(@Path(value = "docid", encoded = true) String docid, @Header("If-Match") @Nullable String revision); // TODO make If-Match compatible with PouchDB
 
 	@HTTP(method = "COPY", path = "{docid}")
 	Call<DocumentResponse.Body> copyToDocument(@Path(value = "docid", encoded = true) String docid, @Header("Destination") String newDocumentId);
 
 	@HTTP(method = "COPY", path = "{docid}")
-	Call<DocumentResponse.Body> copyFromRevisionToDocument(@Path(value = "docid", encoded = true) String docid, @Query("rev") String revision, @Header("Destination") String newDocumentId);
-
-
+	Call<DocumentResponse.Body> copyFromRevisionToDocument(@Path(value = "docid", encoded = true) String docid, @Query("rev") @Nullable String revision, @Header("Destination") String newDocumentId);
 
 
 	@POST("{prefix}_design/{ddoc}/_view/{view}")
@@ -99,7 +99,7 @@ public interface CouchDbDatabaseService {
 	Call<DocumentResponse.Body> putAttachment(
 			@Path(value = "docid", encoded = true) String docid,
 			@Path(value = "attachment", encoded = true) String attachment,
-			@Header("If-Match") String revision, // TODO change for PouchDB compatibility
+			@Header("If-Match") @Nullable String revision, // TODO change for PouchDB compatibility
 			@Body RequestBody body
 	);
 
@@ -110,9 +110,9 @@ public interface CouchDbDatabaseService {
 	Call<DocumentResponse.Body> deleteAttachment(
 			@Path(value = "docid", encoded = true) String docid,
 			@Path(value = "attachment", encoded = true) String attachment,
-//			@Header("If-Match") String revision,
-			@Query("rev") String revision, // CouchDB supports If-Match header here, but PouchDB does not
-			@Query("batch") String batch
+//			@Header("If-Match") @Nullable String revision,
+			@Query("rev") @Nullable String revision, // CouchDB supports If-Match header here, but PouchDB does not
+			@Query("batch") @Nullable String batch
 	);
 
 	/**
@@ -131,7 +131,6 @@ public interface CouchDbDatabaseService {
 	Call<Integer> getRevsLimit();
 	@PUT("_revs_limit")
 	Call<SimpleStatus> setRevsLimit(@Body int revsLimit);
-
 
 	// TODO active tasks: https://docs.couchdb.org/en/stable/api/server/common.html#api-server-active-tasks
 }

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.json.JsonData;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public final class CouchDbJacksonUtil {
 	private CouchDbJacksonUtil() { throw new UnsupportedOperationException(); }
 

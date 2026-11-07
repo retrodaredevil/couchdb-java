@@ -8,8 +8,11 @@ import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class CouchDbSolarThingTest {
+	private CouchDbSolarThingTest() {}
 	public static void main(String[] args) throws CouchDbException {
 		OkHttpCouchDbInstance instance = new OkHttpCouchDbInstance(
 				new OkHttpClient.Builder()

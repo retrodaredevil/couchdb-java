@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.jackson.CouchDbJacksonUtil;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public final class CouchDbUtil {
 	private CouchDbUtil() { throw new UnsupportedOperationException(); }
 	public static String trimDoubleQuotes(String string) {
@@ -45,7 +47,6 @@ public final class CouchDbUtil {
 		}
 		return revision;
 	}
-
 
 	private static String urlEncode(String id) {
 		try {

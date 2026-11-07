@@ -5,13 +5,14 @@ import me.retrodaredevil.couchdbjava.response.CouchDbGetResponse;
 import me.retrodaredevil.couchdbjava.response.DatabaseInfo;
 import me.retrodaredevil.couchdbjava.response.MembershipResponse;
 import me.retrodaredevil.couchdbjava.response.SessionGetResponse;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
+@NullMarked
 public interface CouchDbInstance extends CouchDbRoot {
 	CouchDbDatabase getReplicatorDatabase();
 	CouchDbDatabase getUsersDatabase();
-
 
 	SessionGetResponse getSessionInfo() throws CouchDbException;
 

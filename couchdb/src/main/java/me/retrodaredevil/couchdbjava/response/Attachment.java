@@ -3,8 +3,8 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -12,9 +12,10 @@ import static java.util.Objects.requireNonNull;
  * Represents the structure of an element of _attachments from a get request on a document
  * @see <a href="https://docs.couchdb.org/en/stable/api/document/common.html#attachments">_attachments strucutre docs</a>
  */
+@NullMarked
 public class Attachment {
 	private final String contentType;
-	private final @Nullable byte[] data;
+	private final byte @Nullable [] data;
 	private final String digest;
 	private final @Nullable Integer encodedLength;
 	private final @Nullable String encoding;
@@ -26,16 +27,16 @@ public class Attachment {
 	@JsonCreator
 	public Attachment(
 			@JsonProperty(value = "content_type", required = true) String contentType,
-			@JsonProperty("data") @Nullable byte[] data,
+			@JsonProperty("data") byte @Nullable [] data,
 			@JsonProperty(value = "digest", required = true) String digest,
-			@JsonProperty("encoded_length") Integer encodedLength,
+			@JsonProperty("encoded_length") @Nullable Integer encodedLength,
 			@JsonProperty("encoding") @Nullable String encoding,
 			@JsonProperty("length") @Nullable Integer length,
 			@JsonProperty(value = "revpos", required = true) String revision,
 			@JsonProperty("stub") @Nullable Boolean stub,
 			@JsonProperty("follows") @Nullable Boolean follows) {
 		this.follows = follows;
-		requireNonNull(this.contentType = contentType);
+		this.contentType = requireNonNull(contentType);
 		this.data = data;
 		this.digest = digest;
 		this.encodedLength = encodedLength;
@@ -46,13 +47,13 @@ public class Attachment {
 	}
 
 	@JsonProperty("content_type")
-	public @NotNull String getContentType() {
+	public String getContentType() {
 		return contentType;
 	}
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("data")
-	public @Nullable byte[] getData() {
+	public byte @Nullable [] getData() {
 		return data;
 	}
 
@@ -63,19 +64,19 @@ public class Attachment {
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("encoded_length")
-	public Integer getEncodedLength() {
+	public @Nullable Integer getEncodedLength() {
 		return encodedLength;
 	}
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("encoding")
-	public String getEncoding() {
+	public @Nullable String getEncoding() {
 		return encoding;
 	}
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("length")
-	public Integer getLength() {
+	public @Nullable Integer getLength() {
 		return length;
 	}
 
@@ -86,7 +87,7 @@ public class Attachment {
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("stub")
-	public Boolean getStubRaw() {
+	public @Nullable Boolean getStubRaw() {
 		return stub;
 	}
 	public boolean getStub() {
@@ -95,7 +96,7 @@ public class Attachment {
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("follows")
-	public Boolean getFollowsRaw() {
+	public @Nullable Boolean getFollowsRaw() {
 		return follows;
 	}
 

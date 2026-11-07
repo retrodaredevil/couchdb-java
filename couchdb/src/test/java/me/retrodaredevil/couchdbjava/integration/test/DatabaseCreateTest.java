@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import java.util.stream.StreamSupport;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
+@NullMarked
 public class DatabaseCreateTest {
 	/*
 	When running in IntelliJ, click the run button by the method you want to test, it will fail,

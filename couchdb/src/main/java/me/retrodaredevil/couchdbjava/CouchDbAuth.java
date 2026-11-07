@@ -1,8 +1,8 @@
 package me.retrodaredevil.couchdbjava;
 
 import com.fasterxml.jackson.core.Base64Variants;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 
@@ -12,34 +12,35 @@ import static java.util.Objects.requireNonNull;
  * Authorization in CouchDB should follow <a href="https://www.ietf.org/rfc/rfc2617.txt">RFC2617</a>.
  * Characters in passwords are unrestricted, but usernames have certain restrictions.
  */
+@NullMarked
 public class CouchDbAuth {
 	private static final CouchDbAuth NO_AUTH = new CouchDbAuth(null, null);
 
-	private final String username;
-	private final String password;
+	private final @Nullable String username;
+	private final @Nullable String password;
 
-	private CouchDbAuth(String username, String password) {
+	private CouchDbAuth(@Nullable String username, @Nullable String password) {
 		this.username = username;
 		this.password = password;
 	}
-	public static @NotNull CouchDbAuth create(String username, String password) {
+	public static CouchDbAuth create(String username, String password) {
 		return new CouchDbAuth(requireNonNull(username), requireNonNull(password));
 	}
-	public static @NotNull CouchDbAuth createNoAuth() {
+	public static CouchDbAuth createNoAuth() {
 		return NO_AUTH;
 	}
 	public boolean usesAuth() {
 		return username != null;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return username;
 	}
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return password;
 	}
 
-	public String getBasicAuthString() {
+	public @Nullable String getBasicAuthString() {
 		if (usesAuth()) {
 			return Base64Variants.getDefaultVariant().encode((username + ":" + password).getBytes(StandardCharsets.UTF_8));
 		}

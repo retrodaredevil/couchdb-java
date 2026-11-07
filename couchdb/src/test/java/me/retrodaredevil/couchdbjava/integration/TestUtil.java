@@ -11,11 +11,13 @@ import me.retrodaredevil.couchdbjava.response.DocumentResponse;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@NullMarked
 public final class TestUtil {
 	private TestUtil() { throw new UnsupportedOperationException(); }
 	public static final CouchDbAuth AUTH = CouchDbAuth.create("admin", "password");

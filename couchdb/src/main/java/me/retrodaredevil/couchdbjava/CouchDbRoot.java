@@ -2,6 +2,7 @@ package me.retrodaredevil.couchdbjava;
 
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.response.CouchDbGetResponse;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  * Endpoints that are supported on the root of a CouchDB instance (e.g. /)
  * and endpoints that are also supported on the node of a CouchDB instance (e.g. _node/nonode@nohost/)
  */
+@NullMarked
 public interface CouchDbRoot {
 
 	/**

@@ -13,12 +13,14 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public final class OkHttpUtil {
 	private OkHttpUtil() { throw new UnsupportedOperationException(); }
 
@@ -70,7 +72,7 @@ public final class OkHttpUtil {
 
 		return createException(error, response.code(), response.headers());
 	}
-	private static CouchDbException createException(ErrorResponse error, int code, Headers headers) {
+	private static CouchDbException createException(@Nullable ErrorResponse error, int code, Headers headers) {
 		String additionalString = "";
 		if (error != null) {
 			additionalString = " error: " + error.getError() + " reason: " + error.getReason();

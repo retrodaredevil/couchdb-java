@@ -7,10 +7,10 @@ import me.retrodaredevil.couchdbjava.okhttp.OkHttpCouchDbInstance;
 import me.retrodaredevil.couchdbjava.okhttp.util.OkHttpUtil;
 import me.retrodaredevil.couchdbjava.response.SessionPostResponse;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -24,6 +24,7 @@ import static java.util.Objects.requireNonNull;
  * An auth handler that sends a _session request, then uses the received cookie until it expires. This is designed
  * to only be used with one {@link OkHttpCouchDbInstance} at a time.
  */
+@NullMarked
 public class CookieAuthHandler implements OkHttpAuthHandler {
 	/*
 	Also note while using this, "require_valid_user" should be false https://stackoverflow.com/questions/49443975/couchdb-cookie-authentication-is-not-working
@@ -38,7 +39,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 
 	private final Object parallelLock = new Object();
 
-	private Cookie authCookie;
+	private @Nullable Cookie authCookie;
 
 	private String username;
 	private String password;
@@ -47,7 +48,8 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 	private volatile long renewBeforeExpirePeriodMillis = DEFAULT_RENEW_BEFORE_EXPIRE_PERIOD_MILLIS;
 
 	public CookieAuthHandler(String username, String password) {
-		updateCredentials(username, password);
+		this.username = requireNonNull(username);
+		this.password = requireNonNull(password);
 	}
 	public synchronized void updateCredentials(String username, String password) {
 		requireNonNull(username);
@@ -68,7 +70,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 		this.renewBeforeExpirePeriodMillis = renewBeforeExpirePeriodMillis;
 	}
 
-	public Cookie getAuthCookie() {
+	public @Nullable Cookie getAuthCookie() {
 		Cookie r;
 		synchronized (this) {
 			r = authCookie;
@@ -80,7 +82,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 		}
 		return null;
 	}
-	public Long getExpiresAt() {
+	public @Nullable Long getExpiresAt() {
 		Cookie cookie = getAuthCookie();
 		if (cookie == null) {
 			return null;
@@ -169,12 +171,11 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 	}
 	private final CookieJar cookieJar = new CookieJar() {
 		@Override
-		public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
+		public void saveFromResponse(HttpUrl httpUrl, List<Cookie> list) {
 		}
 
-		@NotNull
 		@Override
-		public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
+		public List<Cookie> loadForRequest(HttpUrl httpUrl) {
 			Cookie authCookie = getAuthCookie();
 			if (authCookie == null) {
 				if (!httpUrl.encodedPathSegments().contains("_session")) {

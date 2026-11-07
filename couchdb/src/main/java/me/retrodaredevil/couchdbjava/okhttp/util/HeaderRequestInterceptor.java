@@ -2,10 +2,11 @@ package me.retrodaredevil.couchdbjava.okhttp.util;
 
 import okhttp3.Interceptor;
 import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 
+@NullMarked
 public class HeaderRequestInterceptor implements Interceptor {
 	private final String name;
 	private final String value;
@@ -16,7 +17,7 @@ public class HeaderRequestInterceptor implements Interceptor {
 	}
 
 	@Override
-	public @NotNull Response intercept(@NotNull Chain chain) throws IOException {
+	public Response intercept(Chain chain) throws IOException {
 		return chain.proceed(chain.request().newBuilder()
 				.header(name, value)
 				.build()

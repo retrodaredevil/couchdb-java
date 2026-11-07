@@ -4,25 +4,27 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.retrodaredevil.couchdbjava.json.JsonData;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class ViewResponse {
 	private final int offset;
 	private final List<DocumentEntry> rows;
 	private final int totalRows;
-	private final String updateSequence;
+	private final @Nullable String updateSequence;
 
 	@JsonCreator
 	public ViewResponse(
 			@JsonProperty(value = "offset", required = true) int offset,
 			@JsonProperty(value = "rows", required = true) List<DocumentEntry> rows,
 			@JsonProperty(value = "total_rows", required = true) int totalRows,
-			@JsonProperty("update_seq") String updateSequence) {
+			@JsonProperty("update_seq") @Nullable String updateSequence) {
 		this.offset = offset;
 		this.rows = Collections.unmodifiableList(rows);
 		this.totalRows = totalRows;
@@ -59,23 +61,22 @@ public class ViewResponse {
 		return updateSequence;
 	}
 
-
 	public static class DocumentEntry {
 		private final String id;
 		private final JsonData keyJson;
 		private final JsonData valueJson;
 
-		private final JsonData doc;
+		private final @Nullable JsonData doc;
 
 		@JsonCreator
 		public DocumentEntry(
 				@JsonProperty(value = "id", required = true) String id,
 				@JsonProperty(value = "key", required = true) JsonData keyJson,
 				@JsonProperty(value = "value", required = true) JsonData valueJson,
-				@JsonProperty("doc") JsonData doc) {
-			requireNonNull(this.id = id);
-			requireNonNull(this.keyJson = keyJson);
-			requireNonNull(this.valueJson = valueJson);
+				@JsonProperty("doc") @Nullable JsonData doc) {
+			this.id = requireNonNull(id);
+			this.keyJson = requireNonNull(keyJson);
+			this.valueJson = requireNonNull(valueJson);
 			this.doc = doc;
 		}
 
@@ -100,7 +101,7 @@ public class ViewResponse {
 		 */
 		@JsonInclude(JsonInclude.Include.NON_NULL)
 		@JsonProperty("doc")
-		public JsonData getDoc() {
+		public @Nullable JsonData getDoc() {
 			return doc;
 		}
 	}

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,16 +16,17 @@ import java.util.List;
 		setterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.NONE,
 		creatorVisibility = JsonAutoDetect.Visibility.NONE
 )
+@NullMarked
 public class SecurityGroup {
 	public static SecurityGroup BLANK = new SecurityGroup(null, null);
 
-	private final List<String> names;
-	private final List<String> roles;
+	private final @Nullable List<String> names;
+	private final @Nullable List<String> roles;
 
 	@JsonCreator
 	public SecurityGroup(
-			@JsonProperty("names") List<String> names,
-			@JsonProperty("roles") List<String> roles) {
+			@JsonProperty("names") @Nullable List<String> names,
+			@JsonProperty("roles") @Nullable List<String> roles) {
 		this.names = names == null ? null : Collections.unmodifiableList(names);
 		this.roles = roles == null ? null : Collections.unmodifiableList(roles);
 	}
@@ -35,7 +36,7 @@ public class SecurityGroup {
 	public @Nullable List<String> getNames() {
 		return names;
 	}
-	public @NotNull List<String> getNamesOrEmpty() {
+	public List<String> getNamesOrEmpty() {
 		return names == null ? Collections.emptyList() : names;
 	}
 
@@ -44,7 +45,7 @@ public class SecurityGroup {
 	public @Nullable List<String> getRoles() {
 		return roles;
 	}
-	public @NotNull List<String> getRolesOrEmpty() {
+	public List<String> getRolesOrEmpty() {
 		return roles == null ? Collections.emptyList() : roles;
 	}
 

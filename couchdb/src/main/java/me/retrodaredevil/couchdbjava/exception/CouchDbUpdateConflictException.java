@@ -3,11 +3,12 @@ package me.retrodaredevil.couchdbjava.exception;
 import me.retrodaredevil.couchdbjava.CouchDbStatusCode;
 import me.retrodaredevil.couchdbjava.response.ErrorResponse;
 import me.retrodaredevil.couchdbjava.tag.DocumentEntityTag;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class CouchDbUpdateConflictException extends CouchDbCodeException {
 	private final @Nullable DocumentEntityTag responseETag;
-
 
 	public CouchDbUpdateConflictException(String message, @Nullable ErrorResponse errorResponse, @Nullable DocumentEntityTag responseETag) {
 		super(message, CouchDbStatusCode.UPDATE_CONFLICT, errorResponse);

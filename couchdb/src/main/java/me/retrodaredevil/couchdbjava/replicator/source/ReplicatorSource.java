@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.TextNode;
 import me.retrodaredevil.couchdbjava.CouchDbAuth;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,6 +16,7 @@ import java.util.Map;
  * Represents a replicator source/target
  */
 @JsonDeserialize(using = ReplicatorSource.Deserializer.class)
+@NullMarked
 public interface ReplicatorSource {
 	URI getUrl();
 	Map<String, String> getHeaders();
@@ -23,7 +24,7 @@ public interface ReplicatorSource {
 	/**
 	 * @return The auth or {@link CouchDbAuth#createNoAuth()}
 	 */
-	@NotNull CouchDbAuth getAuth();
+	CouchDbAuth getAuth();
 
 	class Deserializer extends JsonDeserializer<ReplicatorSource> {
 

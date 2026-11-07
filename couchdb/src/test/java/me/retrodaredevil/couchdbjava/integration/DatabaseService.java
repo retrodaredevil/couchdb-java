@@ -1,5 +1,8 @@
 package me.retrodaredevil.couchdbjava.integration;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public enum DatabaseService {
 	COUCHDB("couchdb"),
 	POUCHDB("pouchdb"),

@@ -1,5 +1,8 @@
 package me.retrodaredevil.couchdbjava;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public final class TestConstants {
 	private TestConstants() { throw new UnsupportedOperationException(); }
 

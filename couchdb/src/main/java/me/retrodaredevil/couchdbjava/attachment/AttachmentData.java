@@ -3,27 +3,28 @@ package me.retrodaredevil.couchdbjava.attachment;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Source;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.InputStream;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public final class AttachmentData {
 	private final AttachmentInfo attachmentInfo;
-	private final String contentType;
+	private final @Nullable String contentType;
 	private final long contentLength;
 	private final Source dataSource;
 
-	public AttachmentData(AttachmentInfo attachmentInfo, String contentType, long contentLength, Source dataSource) {
-		requireNonNull(this.attachmentInfo = attachmentInfo);
+	public AttachmentData(AttachmentInfo attachmentInfo, @Nullable String contentType, long contentLength, Source dataSource) {
+		this.attachmentInfo = requireNonNull(attachmentInfo);
 		this.contentType = contentType;
 		this.contentLength = contentLength;
-		requireNonNull(this.dataSource = dataSource);
+		this.dataSource = requireNonNull(dataSource);
 	}
 
-	public @NotNull AttachmentInfo getAttachmentInfo() {
+	public AttachmentInfo getAttachmentInfo() {
 		return attachmentInfo;
 	}
 
@@ -35,13 +36,13 @@ public final class AttachmentData {
 		return contentLength;
 	}
 
-	public @NotNull InputStream getInputStream() {
+	public InputStream getInputStream() {
 		if (dataSource instanceof BufferedSource) {
 			return ((BufferedSource) dataSource).inputStream();
 		}
 		return Okio.buffer(dataSource).inputStream();
 	}
-	public @NotNull Source getDataSource() {
+	public Source getDataSource() {
 		return dataSource;
 	}
 }

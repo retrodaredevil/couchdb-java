@@ -3,56 +3,59 @@ package me.retrodaredevil.couchdbjava.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.retrodaredevil.couchdbjava.json.JsonData;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NullMarked
 public class ViewQueryParams {
 	@JsonProperty("conflicts")
-	private final Boolean conflicts;
+	private final @Nullable Boolean conflicts;
 	@JsonProperty("descending")
-	private final Boolean descending;
+	private final @Nullable Boolean descending;
 	@JsonProperty("endkey")
-	private final JsonData endKeyJson;
+	private final @Nullable JsonData endKeyJson;
 	@JsonProperty("endkey_docid")
-	private final String endKeyDocId;
+	private final @Nullable String endKeyDocId;
 	@JsonProperty("group")
-	private final Boolean group;
+	private final @Nullable Boolean group;
 	@JsonProperty("group_level")
-	private final Integer groupLevel;
+	private final @Nullable Integer groupLevel;
 	@JsonProperty("include_docs")
-	private final Boolean includeDocs;
+	private final @Nullable Boolean includeDocs;
 	@JsonProperty("attachments")
-	private final Boolean attachments;
+	private final @Nullable Boolean attachments;
 	@JsonProperty("att_encoding_info")
-	private final Boolean includeEncodingInfo;
+	private final @Nullable Boolean includeEncodingInfo;
 	@JsonProperty("inclusive_end")
-	private final Boolean inclusiveEnd;
+	private final @Nullable Boolean inclusiveEnd;
 	@JsonProperty("key")
-	private final JsonData keyJson;
+	private final @Nullable JsonData keyJson;
 	@JsonProperty("keys")
-	private final List<JsonData> keysJsonList;
+	private final @Nullable List<JsonData> keysJsonList;
 	@JsonProperty("limit")
-	private final Integer limit;
+	private final @Nullable Integer limit;
 	@JsonProperty("reduce")
-	private final Boolean reduce;
+	private final @Nullable Boolean reduce;
 	@JsonProperty("skip")
-	private final Integer skip;
+	private final @Nullable Integer skip;
 	@JsonProperty("sorted")
-	private final Boolean sorted;
+	private final @Nullable Boolean sorted;
 	@JsonProperty("stable")
-	private final Boolean stable;
+	private final @Nullable Boolean stable;
 	// "stale" is deprecated
 	@JsonProperty("startkey")
-	private final JsonData startKeyJson;
+	private final @Nullable JsonData startKeyJson;
 	@JsonProperty("startkey_docid")
-	private final String startKeyDocId;
+	private final @Nullable String startKeyDocId;
 	@JsonProperty("update")
-	private final ViewQueryParamsBuilder.Update update;
+	private final ViewQueryParamsBuilder.@Nullable Update update;
 	@JsonProperty("update_seq")
-	private final Boolean updateSequence;
+	private final @Nullable Boolean updateSequence;
 
-	public ViewQueryParams(Boolean conflicts, Boolean descending, JsonData endKeyJson, String endKeyDocId, Boolean group, Integer groupLevel, Boolean includeDocs, Boolean attachments, Boolean includeEncodingInfo, Boolean inclusiveEnd, JsonData keyJson, List<JsonData> keysJsonList, Integer limit, Boolean reduce, Integer skip, Boolean sorted, Boolean stable, JsonData startKeyJson, String startKeyDocId, ViewQueryParamsBuilder.Update update, Boolean updateSequence) {
+	public ViewQueryParams(@Nullable Boolean conflicts, @Nullable Boolean descending, @Nullable JsonData endKeyJson, @Nullable String endKeyDocId, @Nullable Boolean group, @Nullable Integer groupLevel, @Nullable Boolean includeDocs, @Nullable Boolean attachments, @Nullable Boolean includeEncodingInfo, @Nullable Boolean inclusiveEnd, @Nullable JsonData keyJson, @Nullable List<JsonData> keysJsonList, @Nullable Integer limit, @Nullable Boolean reduce, @Nullable Integer skip, @Nullable Boolean sorted, @Nullable Boolean stable, @Nullable JsonData startKeyJson, @Nullable String startKeyDocId, ViewQueryParamsBuilder.@Nullable Update update, @Nullable Boolean updateSequence) {
 		this.conflicts = conflicts;
 		this.descending = descending;
 		this.endKeyJson = endKeyJson;

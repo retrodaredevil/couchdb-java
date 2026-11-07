@@ -9,11 +9,13 @@ import okhttp3.HttpUrl;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class OkHttpCouchDbNode implements CouchDbNode {
 
 	private final String name;

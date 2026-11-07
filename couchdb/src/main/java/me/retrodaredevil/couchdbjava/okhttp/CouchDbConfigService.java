@@ -10,14 +10,15 @@ import retrofit2.http.HEAD;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * @see <a href="https://docs.couchdb.org/en/stable/api/server/configuration.html#accessing-the-local-node-s-configuration ">docs.couchdb.org/en/stable/api/server/configuration.html#accessing-the-local-node-s-configuration</a>
  */
+@NullMarked
 public interface CouchDbConfigService {
 	@HEAD("./")
 	Call<Void> checkExists();
-
 
 	/**
 	 * @see <a href="https://docs.couchdb.org/en/stable/api/server/configuration.html#node-node-name-config">docs.couchdb.org/en/stable/api/server/configuration.html#node-node-name-config</a>

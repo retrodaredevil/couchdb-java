@@ -20,12 +20,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.jspecify.annotations.NullMarked;
 
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
+@NullMarked
 public class ReplicatorTest {
 	private static final String SOURCE_DATABASE = "replicator_test_a";
 	private static final String TARGET_DATABASE = "replicator_test_b";
@@ -63,7 +65,6 @@ public class ReplicatorTest {
 			ReplicatorDocument deserializedDocument = CouchDbJacksonUtil.readValue(MAPPER, jsonData, ReplicatorDocument.class);
 			assertTrue(deserializedDocument.getSource() instanceof ObjectReplicatorSource);
 		}
-
 
 		// TODO We should probably try and change a configuration value in CouchDB to convince this to execute faster
 		// NOTE: For CouchDB 3.3 and lower, we were able to get away with a timeout of about 7.5 seconds

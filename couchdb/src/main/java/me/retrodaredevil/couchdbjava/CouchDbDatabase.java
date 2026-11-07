@@ -12,11 +12,12 @@ import me.retrodaredevil.couchdbjava.response.*;
 import me.retrodaredevil.couchdbjava.security.DatabaseSecurity;
 import me.retrodaredevil.couchdbjava.tag.DocumentEntityTag;
 import okio.Source;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
+@NullMarked
 public interface CouchDbDatabase extends CouchDbShared {
 	String getName();
 
@@ -83,7 +84,7 @@ public interface CouchDbDatabase extends CouchDbShared {
 		return getDocumentIfUpdated(id, revision == null ? null : DocumentEntityTag.fromRevision(revision));
 	}
 
-	DocumentData getDocumentIfUpdated(String id, DocumentEntityTag eTag) throws CouchDbException;
+	DocumentData getDocumentIfUpdated(String id, @Nullable DocumentEntityTag eTag) throws CouchDbException;
 
 	/**
 	 * @throws UnsupportedOperationException Thrown if the response received does not contain a revision ETag.
@@ -103,8 +104,6 @@ public interface CouchDbDatabase extends CouchDbShared {
 	DocumentResponse copyToExistingDocument(String id, String targetDocumentId, String targetDocumentRevision) throws CouchDbException;
 	DocumentResponse copyFromRevisionToExistingDocument(String id, String revision, String targetDocumentId, String targetDocumentRevision) throws CouchDbException;
 
-
-
 	DatabaseSecurity getSecurity() throws CouchDbException;
 	void setSecurity(DatabaseSecurity databaseSecurity) throws CouchDbException;
 
@@ -115,22 +114,22 @@ public interface CouchDbDatabase extends CouchDbShared {
 	 * Gets information about an attachment on a document
 	 * @see <a href="https://docs.couchdb.org/en/stable/api/document/attachments.html#head--db-docid-attname">HEAD Documentation</a>
 	 */
-	@NotNull AttachmentInfo getAttachmentInfo(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
-	@NotNull AttachmentData getAttachment(@NotNull AttachmentGet attachmentGet) throws CouchDbException;
+	AttachmentInfo getAttachmentInfo(AttachmentGet attachmentGet) throws CouchDbException;
+	AttachmentData getAttachment(AttachmentGet attachmentGet) throws CouchDbException;
 
-	@NotNull DocumentResponse putAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String documentRevision, @Nullable String contentType) throws CouchDbException;
-	default @NotNull DocumentResponse putAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String documentRevision) throws CouchDbException {
+	DocumentResponse putAttachment(String documentId, String attachmentName, Source dataSource, @Nullable String documentRevision, @Nullable String contentType) throws CouchDbException;
+	default DocumentResponse putAttachment(String documentId, String attachmentName, Source dataSource, @Nullable String documentRevision) throws CouchDbException {
 		return putAttachment(documentId, attachmentName, dataSource, documentRevision, null);
 	}
-	default @NotNull DocumentResponse putAttachmentOnNewDocument(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource) throws CouchDbException {
+	default DocumentResponse putAttachmentOnNewDocument(String documentId, String attachmentName, Source dataSource) throws CouchDbException {
 		return putAttachment(documentId, attachmentName, dataSource, null, null);
 	}
-	default @NotNull DocumentResponse putAttachmentOnNewDocument(@NotNull String documentId, @NotNull String attachmentName, @NotNull Source dataSource, @Nullable String contentType) throws CouchDbException {
+	default DocumentResponse putAttachmentOnNewDocument(String documentId, String attachmentName, Source dataSource, @Nullable String contentType) throws CouchDbException {
 		return putAttachment(documentId, attachmentName, dataSource, null, contentType);
 	}
 
-	@NotNull DocumentResponse deleteAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull String documentRevision, boolean batch) throws CouchDbException;
-	default @NotNull DocumentResponse deleteAttachment(@NotNull String documentId, @NotNull String attachmentName, @NotNull String documentRevision) throws CouchDbException {
+	DocumentResponse deleteAttachment(String documentId, String attachmentName, String documentRevision, boolean batch) throws CouchDbException;
+	default DocumentResponse deleteAttachment(String documentId, String attachmentName, String documentRevision) throws CouchDbException {
 		return deleteAttachment(documentId, attachmentName, documentRevision, false);
 	}
 

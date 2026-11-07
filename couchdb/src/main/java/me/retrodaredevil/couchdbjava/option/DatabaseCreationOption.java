@@ -1,14 +1,17 @@
 package me.retrodaredevil.couchdbjava.option;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+@NullMarked
 public class DatabaseCreationOption {
 
 	private static final DatabaseCreationOption DEFAULT_OPTION = builder().build();
 
-	private final Integer shards;
-	private final Integer replicas;
-	private final Boolean partitioned;
+	private final @Nullable Integer shards;
+	private final @Nullable Integer replicas;
+	private final @Nullable Boolean partitioned;
 
-	public DatabaseCreationOption(Integer shards, Integer replicas, Boolean partitioned) {
+	public DatabaseCreationOption(@Nullable Integer shards, @Nullable Integer replicas, @Nullable Boolean partitioned) {
 		this.shards = shards;
 		this.replicas = replicas;
 		this.partitioned = partitioned;
@@ -20,36 +23,35 @@ public class DatabaseCreationOption {
 		return new DatabaseCreationOption.Builder();
 	}
 
-	public Integer getShards() {
+	public @Nullable Integer getShards() {
 		return shards;
 	}
 
-	public Integer getReplicas() {
+	public @Nullable Integer getReplicas() {
 		return replicas;
 	}
 
-	public Boolean getPartitioned() {
+	public @Nullable Boolean getPartitioned() {
 		return partitioned;
 	}
 
-
 	public static final class Builder {
-		private Integer shards;
-		private Integer replicas;
-		private Boolean partitioned;
+		private @Nullable Integer shards;
+		private @Nullable Integer replicas;
+		private @Nullable Boolean partitioned;
 
 		private Builder() {
 		}
 
-		public Builder shards(Integer shards) {
+		public Builder shards(@Nullable Integer shards) {
 			this.shards = shards;
 			return this;
 		}
-		public Builder replicas(Integer replicas) {
+		public Builder replicas(@Nullable Integer replicas) {
 			this.replicas = replicas;
 			return this;
 		}
-		public Builder partitioned(Boolean partitioned) {
+		public Builder partitioned(@Nullable Boolean partitioned) {
 			this.partitioned = partitioned;
 			return this;
 		}

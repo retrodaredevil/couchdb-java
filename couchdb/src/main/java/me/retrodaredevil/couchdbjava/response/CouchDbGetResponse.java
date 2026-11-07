@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,9 +13,10 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
+@NullMarked
 public class CouchDbGetResponse {
-	private final String couchDbMessage;
-	private final String pouchDbMessage;
+	private final @Nullable String couchDbMessage;
+	private final @Nullable String pouchDbMessage;
 	// there may be more field keys for messages of a specific type of database. TODO check this out for Cloudant and Couchbase
 	private final String version;
 	private final @Nullable String gitSha;
@@ -51,7 +53,7 @@ public class CouchDbGetResponse {
 	}
 
 	@JsonProperty("version")
-	public String getVersion() {
+	public @Nullable String getVersion() {
 		return version;
 	}
 
@@ -75,7 +77,6 @@ public class CouchDbGetResponse {
 		return vendor;
 	}
 
-
 	public static class Vendor {
 		private final String name;
 		private final @Nullable String version;
@@ -84,7 +85,7 @@ public class CouchDbGetResponse {
 		public Vendor(
 				@JsonProperty(value = "name", required = true) String name,
 				@JsonProperty("version") @Nullable String version) {
-			requireNonNull(this.name = name);
+			this.name = requireNonNull(name);
 			this.version = version;
 		}
 

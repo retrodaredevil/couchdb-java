@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import me.retrodaredevil.couchdbjava.CouchDbAuth;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Collections;
@@ -24,16 +24,17 @@ import static java.util.Objects.requireNonNull;
 		creatorVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JsonDeserialize(as = ObjectReplicatorSource.class) // this annotation required to "override" superinterface annotation
+@NullMarked
 public class ObjectReplicatorSource implements ReplicatorSource {
 	private final URI url;
-	private final Map<String, String> headers;
-	private final RawAuth auth;
+	private final @Nullable Map<String, String> headers;
+	private final @Nullable RawAuth auth;
 
 	@JsonCreator
 	public ObjectReplicatorSource(
 			@JsonProperty(value = "url", required = true) URI ur,
-			@JsonProperty("headers") Map<String, String> headers,
-			@JsonProperty("auth") RawAuth auth
+			@JsonProperty("headers") @Nullable Map<String, String> headers,
+			@JsonProperty("auth") @Nullable RawAuth auth
 	) {
 		this.url = requireNonNull(ur);
 		this.headers = headers == null ? null : Collections.unmodifiableMap(new HashMap<>(headers));
@@ -65,7 +66,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 	}
 
 	@Override
-	public @NotNull CouchDbAuth getAuth() {
+	public CouchDbAuth getAuth() {
 		// https://docs.couchdb.org/en/stable/replication/replicator.html#specifying-usernames-and-passwords
 		if (auth != null && auth.getBasic() != null) {
 			return auth.getBasic().toAuth();
@@ -85,7 +86,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		ObjectReplicatorSource that = (ObjectReplicatorSource) o;
@@ -104,7 +105,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 	public static final class Builder {
 		private final URI url;
 		private final Map<String, String> headers = new HashMap<>();
-		private RawAuth auth = null;
+		private @Nullable RawAuth auth = null;
 
 		private Builder(URI url) {
 			this.url = requireNonNull(url);
@@ -131,7 +132,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 		 */
 		public Builder addAuthObject(CouchDbAuth auth) {
 			if (auth.usesAuth()) {
-				this.auth = new RawAuth(new RawAuthBasic(auth.getUsername(), auth.getPassword()));
+				this.auth = new RawAuth(new RawAuthBasic(requireNonNull(auth.getUsername()), requireNonNull(auth.getPassword())));
 			} else {
 				this.auth = null;
 			}
@@ -143,20 +144,20 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 	}
 
 	public static final class RawAuth {
-		private final RawAuthBasic basic;
+		private final @Nullable RawAuthBasic basic;
 
 		@JsonCreator
-		public RawAuth(@JsonProperty("basic") RawAuthBasic basic) {
+		public RawAuth(@JsonProperty("basic") @Nullable RawAuthBasic basic) {
 			this.basic = basic;
 		}
 
 		@JsonProperty("basic")
-		public RawAuthBasic getBasic() {
+		public @Nullable RawAuthBasic getBasic() {
 			return basic;
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(@Nullable Object o) {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 			RawAuth rawAuth = (RawAuth) o;
@@ -195,7 +196,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(@Nullable Object o) {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 			RawAuthBasic that = (RawAuthBasic) o;

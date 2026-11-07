@@ -3,7 +3,8 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.retrodaredevil.couchdbjava.json.JsonData;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class BulkGetResponse {
 	private final List<Result> results;
 
@@ -19,18 +21,18 @@ public class BulkGetResponse {
 		this.results = Collections.unmodifiableList(results);
 	}
 
-	public @NotNull List<Result> getResults() {
+	public List<Result> getResults() {
 		return results;
 	}
 
 	public static class Result {
 		private final String documentId;
 		private final List<JsonData> docs;
-		private final ErrorDoc error;
+		private final @Nullable ErrorDoc error;
 
 		@JsonCreator
 		public Result(@JsonProperty("id") String documentId, @JsonProperty("docs") List<InnerResult> innerResultArray) {
-			requireNonNull(this.documentId = documentId);
+			this.documentId = requireNonNull(documentId);
 			if (innerResultArray.size() == 0) {
 				throw new IllegalArgumentException("docs array's size is 0!");
 			}
@@ -40,7 +42,7 @@ public class BulkGetResponse {
 					if (result.error != null) {
 						throw new IllegalArgumentException("docs's size is " + innerResultArray.size() + " and one has an error! This is unexpected!");
 					}
-					docs.add(result.jsonData);
+					docs.add(requireNonNull(result.jsonData));
 				}
 				this.docs = docs;
 				error = null;
@@ -65,7 +67,7 @@ public class BulkGetResponse {
 		public boolean isError() {
 			return error != null;
 		}
-		public ErrorDoc getError() {
+		public @Nullable ErrorDoc getError() {
 			return error;
 		}
 		public boolean hasConflicts() {
@@ -88,11 +90,11 @@ public class BulkGetResponse {
 		}
 	}
 	private static class InnerResult {
-		private final JsonData jsonData;
-		private final ErrorDoc error;
+		private final @Nullable JsonData jsonData;
+		private final @Nullable ErrorDoc error;
 
 		@JsonCreator
-		InnerResult(@JsonProperty("ok") JsonData jsonData, @JsonProperty("error") ErrorDoc error) {
+		InnerResult(@JsonProperty("ok") @Nullable JsonData jsonData, @JsonProperty("error") @Nullable ErrorDoc error) {
 			this.jsonData = jsonData;
 			this.error = error;
 			if (jsonData == null && error == null) {
@@ -115,10 +117,10 @@ public class BulkGetResponse {
 				@JsonProperty(value = "rev", required = true) String revision,
 				@JsonProperty(value = "error", required = true) String error,
 				@JsonProperty(value = "reason", required = true) String reason) {
-			requireNonNull(this.documentId = documentId);
-			requireNonNull(this.revision = revision);
-			requireNonNull(this.error = error);
-			requireNonNull(this.reason = reason);
+			this.documentId = requireNonNull(documentId);
+			this.revision = requireNonNull(revision);
+			this.error = requireNonNull(error);
+			this.reason = requireNonNull(reason);
 		}
 
 		public String getDocumentId() {

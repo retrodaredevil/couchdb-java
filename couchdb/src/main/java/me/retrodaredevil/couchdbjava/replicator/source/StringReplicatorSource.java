@@ -2,7 +2,8 @@ package me.retrodaredevil.couchdbjava.replicator.source;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import me.retrodaredevil.couchdbjava.CouchDbAuth;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class StringReplicatorSource implements ReplicatorSource {
 	@JsonValue
 	private final URI uri;
@@ -32,7 +34,7 @@ public class StringReplicatorSource implements ReplicatorSource {
 	}
 
 	@Override
-	public @NotNull CouchDbAuth getAuth() {
+	public CouchDbAuth getAuth() {
 		String userInfo = uri.getUserInfo();
 		if (userInfo == null) {
 			return CouchDbAuth.createNoAuth();
@@ -50,7 +52,7 @@ public class StringReplicatorSource implements ReplicatorSource {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		StringReplicatorSource that = (StringReplicatorSource) o;

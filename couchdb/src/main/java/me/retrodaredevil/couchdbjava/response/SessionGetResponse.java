@@ -3,12 +3,14 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class SessionGetResponse {
 
 	private final Info info;
@@ -20,9 +22,9 @@ public class SessionGetResponse {
 			@JsonProperty(value = "info", required = true) Info info,
 			@JsonProperty(value = "ok", required = true) boolean ok,
 			@JsonProperty(value = "userCtx", required = true) UserContext userContext) {
-		requireNonNull(this.info = info);
+		this.info = requireNonNull(info);
 		this.ok = ok;
-		requireNonNull(this.userContext = userContext);
+		this.userContext = requireNonNull(userContext);
 	}
 
 	@JsonProperty("info")
@@ -52,18 +54,18 @@ public class SessionGetResponse {
 				@JsonProperty(value = "authentication_handlers", required = true) List<String> authenticationHandlers) {
 			this.authenticated = authenticated;
 			this.authenticationDatabase = authenticationDatabase;
-			requireNonNull(this.authenticationHandlers = authenticationHandlers);
+			this.authenticationHandlers = requireNonNull(authenticationHandlers);
 		}
 
 		@JsonInclude(JsonInclude.Include.NON_NULL)
 		@JsonProperty("authenticated")
-		public String getAuthenticated() {
+		public @Nullable String getAuthenticated() {
 			return authenticated;
 		}
 
 		@JsonInclude(JsonInclude.Include.NON_NULL)
 		@JsonProperty("authentication_db")
-		public String getAuthenticationDatabase() {
+		public @Nullable String getAuthenticationDatabase() {
 			return authenticationDatabase;
 		}
 

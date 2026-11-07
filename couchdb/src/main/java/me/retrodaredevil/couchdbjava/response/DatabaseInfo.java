@@ -2,6 +2,8 @@ package me.retrodaredevil.couchdbjava.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -9,6 +11,7 @@ import static java.util.Objects.requireNonNull;
  * https://docs.couchdb.org/en/stable/api/database/common.html
  */
 @SuppressWarnings("unused")
+@NullMarked
 public class DatabaseInfo {
 	private final String name;
 	private final String purgeSequence;
@@ -37,17 +40,17 @@ public class DatabaseInfo {
 			@JsonProperty(value = "compact_running", required = true) boolean compactRunning,
 			@JsonProperty(value = "cluster", required = true) Cluster cluster,
 			@JsonProperty(value = "instance_start_time", required = true) String instanceStartTime) {
-		requireNonNull(this.name = name);
-		requireNonNull(this.purgeSequence = purgeSequence);
-		requireNonNull(this.updateSequence = updateSequence);
-		requireNonNull(this.sizes = sizes);
-		requireNonNull(this.properties = properties);
+		this.name = requireNonNull(name);
+		this.purgeSequence = requireNonNull(purgeSequence);
+		this.updateSequence = requireNonNull(updateSequence);
+		this.sizes = requireNonNull(sizes);
+		this.properties = requireNonNull(properties);
 		this.documentDeleteCount = documentDeleteCount;
 		this.documentCount = documentCount;
 		this.diskFormatVersion = diskFormatVersion;
 		this.compactRunning = compactRunning;
-		requireNonNull(this.cluster = cluster);
-		requireNonNull(this.instanceStartTime = instanceStartTime);
+		this.cluster = requireNonNull(cluster);
+		this.instanceStartTime = requireNonNull(instanceStartTime);
 	}
 	@JsonValue
 	private String _jacksonValue() {
@@ -134,7 +137,7 @@ public class DatabaseInfo {
 
 		private final boolean partitioned;
 
-		public Properties(@JsonProperty("partitioned") Boolean partitioned) {
+		public Properties(@JsonProperty("partitioned") @Nullable Boolean partitioned) {
 			this.partitioned = Boolean.TRUE.equals(partitioned);
 		}
 

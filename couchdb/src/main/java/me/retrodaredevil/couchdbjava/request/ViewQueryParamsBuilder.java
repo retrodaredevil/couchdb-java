@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.StringJsonData;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,65 +14,66 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class ViewQueryParamsBuilder {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
-	private Boolean conflicts = null;
-	private Boolean descending = null;
-	private JsonData endKeyJson = null;
-	private String endKeyDocId = null;
-	private Boolean group = null;
-	private Integer groupLevel = null;
-	private Boolean includeDocs = null;
-	private Boolean attachments = null;
-	private Boolean includeEncodingInfo = null;
-	private Boolean inclusiveEnd = null;
-	private JsonData keyJson = null;
-	private List<JsonData> keysJsonList = null;
-	private Integer limit = null;
-	private Boolean reduce = null;
-	private Integer skip = null;
-	private Boolean sorted = null;
-	private Boolean stable = null;
+	private @Nullable Boolean conflicts = null;
+	private @Nullable Boolean descending = null;
+	private @Nullable JsonData endKeyJson = null;
+	private @Nullable String endKeyDocId = null;
+	private @Nullable Boolean group = null;
+	private @Nullable Integer groupLevel = null;
+	private @Nullable Boolean includeDocs = null;
+	private @Nullable Boolean attachments = null;
+	private @Nullable Boolean includeEncodingInfo = null;
+	private @Nullable Boolean inclusiveEnd = null;
+	private @Nullable JsonData keyJson = null;
+	private @Nullable List<JsonData> keysJsonList = null;
+	private @Nullable Integer limit = null;
+	private @Nullable Boolean reduce = null;
+	private @Nullable Integer skip = null;
+	private @Nullable Boolean sorted = null;
+	private @Nullable Boolean stable = null;
 	// "stale" is deprecated
-	private JsonData startKeyJson;
-	private String startKeyDocId;
-	private Update update = null;
-	private Boolean updateSequence = null;
+	private @Nullable JsonData startKeyJson;
+	private @Nullable String startKeyDocId;
+	private @Nullable Update update = null;
+	private @Nullable Boolean updateSequence = null;
 
 	public ViewQueryParams build() {
 		return new ViewQueryParams(conflicts, descending, endKeyJson, endKeyDocId, group, groupLevel, includeDocs, attachments, includeEncodingInfo,
 				inclusiveEnd, keyJson, keysJsonList, limit, reduce, skip, sorted, stable, startKeyJson, startKeyDocId, update, updateSequence);
 	}
 
-	public ViewQueryParamsBuilder conflicts(Boolean conflicts) {
+	public ViewQueryParamsBuilder conflicts(@Nullable Boolean conflicts) {
 		this.conflicts = conflicts;
 		if (Boolean.TRUE.equals(conflicts)) {
 			includeDocs(true);
 		}
 		return this;
 	}
-	public ViewQueryParamsBuilder descending(Boolean descending) { this.descending = descending; return this; }
+	public ViewQueryParamsBuilder descending(@Nullable Boolean descending) { this.descending = descending; return this; }
 	public ViewQueryParamsBuilder descending() { return descending(true); }
 	// endKey defined below
-	public ViewQueryParamsBuilder endKeyDocId(String endKeyDocId) { this.endKeyDocId = endKeyDocId; return this; }
-	public ViewQueryParamsBuilder group(Boolean group) { this.group = group; return this; }
-	public ViewQueryParamsBuilder groupLevel(Integer groupLevel) {
+	public ViewQueryParamsBuilder endKeyDocId(@Nullable String endKeyDocId) { this.endKeyDocId = endKeyDocId; return this; }
+	public ViewQueryParamsBuilder group(@Nullable Boolean group) { this.group = group; return this; }
+	public ViewQueryParamsBuilder groupLevel(@Nullable Integer groupLevel) {
 		this.groupLevel = groupLevel;
 		if (groupLevel != null) {
 			group(true);
 		}
 		return this;
 	}
-	public ViewQueryParamsBuilder includeDocs(Boolean includeDocs) { this.includeDocs = includeDocs; return this; }
-	public ViewQueryParamsBuilder attachments(Boolean attachments) {
+	public ViewQueryParamsBuilder includeDocs(@Nullable Boolean includeDocs) { this.includeDocs = includeDocs; return this; }
+	public ViewQueryParamsBuilder attachments(@Nullable Boolean attachments) {
 		this.attachments = attachments;
 		if (Boolean.TRUE.equals(attachments)) {
 			includeDocs(true);
 		}
 		return this;
 	}
-	public ViewQueryParamsBuilder includeEncodingInfo(Boolean includeEncodingInfo) {
+	public ViewQueryParamsBuilder includeEncodingInfo(@Nullable Boolean includeEncodingInfo) {
 		this.includeEncodingInfo = includeEncodingInfo;
 		if (Boolean.TRUE.equals(includeEncodingInfo)) {
 			includeDocs(true);
@@ -81,18 +84,18 @@ public class ViewQueryParamsBuilder {
 	/**
 	 * Defaults to true
 	 */
-	public ViewQueryParamsBuilder inclusiveEnd(Boolean inclusiveEnd) { this.inclusiveEnd = inclusiveEnd; return this; }
+	public ViewQueryParamsBuilder inclusiveEnd(@Nullable Boolean inclusiveEnd) { this.inclusiveEnd = inclusiveEnd; return this; }
 	// key defined below
 	// keys defined below
-	public ViewQueryParamsBuilder limit(Integer limit) { this.limit = limit; return this; }
-	public ViewQueryParamsBuilder reduce(Boolean reduce) { this.reduce = reduce; return this; }
-	public ViewQueryParamsBuilder skip(Integer skip) { this.skip = skip; return this; }
-	public ViewQueryParamsBuilder sorted(Boolean sorted) { this.sorted = sorted; return this; }
-	public ViewQueryParamsBuilder stable(Boolean stable) { this.stable = stable; return this; }
+	public ViewQueryParamsBuilder limit(@Nullable Integer limit) { this.limit = limit; return this; }
+	public ViewQueryParamsBuilder reduce(@Nullable Boolean reduce) { this.reduce = reduce; return this; }
+	public ViewQueryParamsBuilder skip(@Nullable Integer skip) { this.skip = skip; return this; }
+	public ViewQueryParamsBuilder sorted(@Nullable Boolean sorted) { this.sorted = sorted; return this; }
+	public ViewQueryParamsBuilder stable(@Nullable Boolean stable) { this.stable = stable; return this; }
 	// startKey defined below
-	public ViewQueryParamsBuilder startKeyDocId(String startKeyDocId) { this.startKeyDocId = startKeyDocId; return this; }
-	public ViewQueryParamsBuilder update(Update update) { this.update = update; return this; }
-	public ViewQueryParamsBuilder updateSequence(Boolean updateSequence) { this.updateSequence = updateSequence; return this; }
+	public ViewQueryParamsBuilder startKeyDocId(@Nullable String startKeyDocId) { this.startKeyDocId = startKeyDocId; return this; }
+	public ViewQueryParamsBuilder update(@Nullable Update update) { this.update = update; return this; }
+	public ViewQueryParamsBuilder updateSequence(@Nullable Boolean updateSequence) { this.updateSequence = updateSequence; return this; }
 
 	// region endKey
 	public ViewQueryParamsBuilder endKey(long endKey) {
@@ -113,7 +116,7 @@ public class ViewQueryParamsBuilder {
 	public ViewQueryParamsBuilder endKey(String endKey) {
 		return endKeyJson(stringToJson(endKey));
 	}
-	public ViewQueryParamsBuilder endKeyJson(JsonData endKeyJson) {
+	public ViewQueryParamsBuilder endKeyJson(@Nullable JsonData endKeyJson) {
 		this.endKeyJson = endKeyJson;
 		return this;
 	}
@@ -137,7 +140,7 @@ public class ViewQueryParamsBuilder {
 	public ViewQueryParamsBuilder key(String key) {
 		return keyJson(stringToJson(key));
 	}
-	public ViewQueryParamsBuilder keyJson(JsonData keyJson) {
+	public ViewQueryParamsBuilder keyJson(@Nullable JsonData keyJson) {
 		this.keyJson = keyJson;
 		return this;
 	}
@@ -185,7 +188,7 @@ public class ViewQueryParamsBuilder {
 		return this;
 	}
 	public ViewQueryParamsBuilder keysJson(JsonData... keysJsonList) { return keysJson(Arrays.asList(keysJsonList)); }
-	public ViewQueryParamsBuilder keysJson(List<JsonData> keysJsonList) { this.keysJsonList = keysJsonList; return this; }
+	public ViewQueryParamsBuilder keysJson(@Nullable List<JsonData> keysJsonList) { this.keysJsonList = keysJsonList; return this; }
 	// endregion
 	// region startKey
 	public ViewQueryParamsBuilder startKey(long startKey) {
@@ -206,7 +209,7 @@ public class ViewQueryParamsBuilder {
 	public ViewQueryParamsBuilder startKey(String startKey) {
 		return startKeyJson(stringToJson(startKey));
 	}
-	public ViewQueryParamsBuilder startKeyJson(JsonData startKeyJson) {
+	public ViewQueryParamsBuilder startKeyJson(@Nullable JsonData startKeyJson) {
 		this.startKeyJson = startKeyJson;
 		return this;
 	}

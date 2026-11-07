@@ -20,10 +20,12 @@ import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.jspecify.annotations.NullMarked;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
+@NullMarked
 public class IncludeDocsViewTest {
 	private static final String DATABASE = "test_include_docs_view_database";
 
@@ -44,7 +46,6 @@ public class IncludeDocsViewTest {
 		ObjectMapper mapper = new ObjectMapper();
 		database.putDocument("_design/test_design", new StringJsonData(mapper.writeValueAsString(TestUtil.createIdViewDesignDocument())));
 
-
 		ViewResponse response = database.queryView(
 				"test_design",
 				"id_view",
@@ -61,7 +62,7 @@ public class IncludeDocsViewTest {
 		assertEquals('"' + documentId + '"', entry.getKey().getJson()); // as long as the random generation doesn't need characters escaped for JSON, this will work
 		assertEquals("null", entry.getValue().getJson());
 
-		JsonData doc = entry.getDoc();
+		JsonData doc = java.util.Objects.requireNonNull(entry.getDoc());
 		ObjectNode objectNode = (ObjectNode) CouchDbJacksonUtil.getNodeFrom(doc);
 		assertEquals(documentId, objectNode.get("_id").asText());
 		assertEquals(revision, objectNode.get("_rev").asText());

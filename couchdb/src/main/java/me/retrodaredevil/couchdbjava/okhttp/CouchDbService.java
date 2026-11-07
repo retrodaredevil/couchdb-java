@@ -9,10 +9,12 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 import java.util.Map;
 
+@NullMarked
 public interface CouchDbService {
 	@GET("./")
 	Call<CouchDbGetResponse> getInfo();

@@ -2,7 +2,10 @@ package me.retrodaredevil.couchdbjava;
 
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.json.JsonData;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public interface CouchDbConfig {
 	/**
 	 * Typically this is "_config".
@@ -23,14 +26,13 @@ public interface CouchDbConfig {
 	 * @param value The new value or null to delete the value
 	 * @return The old value or an empty string if it was not present
 	 */
-	String putValue(String section, String key, String value) throws CouchDbException;
+	String putValue(String section, String key, @Nullable String value) throws CouchDbException;
 	/**
 	 * @return The old value
 	 */
 	default String deleteValue(String section, String key) throws CouchDbException {
 		return putValue(section, key, null);
 	}
-
 
 	/**
 	 *

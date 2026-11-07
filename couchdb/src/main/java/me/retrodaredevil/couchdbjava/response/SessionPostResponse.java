@@ -2,9 +2,12 @@ package me.retrodaredevil.couchdbjava.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
+@NullMarked
 public class SessionPostResponse {
 	private final boolean ok;
 	private final String name;

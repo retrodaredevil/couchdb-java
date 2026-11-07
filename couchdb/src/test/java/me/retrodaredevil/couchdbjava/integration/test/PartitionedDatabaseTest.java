@@ -17,6 +17,7 @@ import me.retrodaredevil.couchdbjava.response.ErrorResponse;
 import me.retrodaredevil.couchdbjava.response.ViewResponse;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestConstants.INTEGRATION_TEST)
+@NullMarked
 public class PartitionedDatabaseTest {
 	private static final String DATABASE = "test_partitioned_database";
 

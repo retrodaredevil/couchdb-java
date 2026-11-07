@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.NullNode;
 import me.retrodaredevil.couchdbjava.json.JsonData;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -15,12 +17,13 @@ import static java.util.Objects.requireNonNull;
 
 @JsonDeserialize(using = JacksonJsonData.Deserializer.class)
 @JsonSerialize(using = JacksonJsonData.Serializer.class)
+@NullMarked
 public class JacksonJsonData implements JsonData {
 	public static final JacksonJsonData JSON_NULL_DATA = new JacksonJsonData(NullNode.getInstance());
 	private final JsonNode node;
 
 	public JacksonJsonData(JsonNode node) {
-		requireNonNull(this.node = node);
+		this.node = requireNonNull(node);
 	}
 
 	@Override
@@ -44,7 +47,7 @@ public class JacksonJsonData implements JsonData {
 		}
 
 		@Override
-		public Object getAbsentValue(DeserializationContext ctxt) throws JsonMappingException {
+		public @Nullable Object getAbsentValue(DeserializationContext ctxt) throws JsonMappingException {
 			// Note that this method is not available for Jackson versions below 2.13, so using 2.13 is the only thing that makes the deserialization of this work as expected
 			return null;
 		}

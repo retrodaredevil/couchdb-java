@@ -1,8 +1,10 @@
 package me.retrodaredevil.couchdbjava.exception;
 
 import me.retrodaredevil.couchdbjava.response.ErrorResponse;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 public class CouchDbCodeException extends CouchDbException {
 	private final int code;
 	private final @Nullable ErrorResponse errorResponse;

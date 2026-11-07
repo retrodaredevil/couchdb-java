@@ -1,5 +1,8 @@
 package me.retrodaredevil.couchdbjava;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public interface CouchDbNode extends CouchDbRoot {
 
 	String getName();

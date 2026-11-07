@@ -1,5 +1,8 @@
 package me.retrodaredevil.couchdbjava;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public final class CouchDbStatusCode {
 	private CouchDbStatusCode() {
 		throw new UnsupportedOperationException();

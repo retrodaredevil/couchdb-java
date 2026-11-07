@@ -8,11 +8,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import me.retrodaredevil.couchdbjava.json.jackson.JacksonJsonData;
 import me.retrodaredevil.couchdbjava.json.jackson.RawDeserializer;
 import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@NullMarked
 public class RawDeserializeTest {
 	@Test
 	void testRaw() throws JsonProcessingException {
@@ -28,18 +31,19 @@ public class RawDeserializeTest {
 		String nestedJson = "{\"a\":5}";
 		String json = "{\"value\":[" + nestedJson + "]}";
 		SimpleArrayObject object = mapper.readValue(json, SimpleArrayObject.class);
-		assertEquals(1, object.rawValues.size());
-		assertEquals(nestedJson, object.rawValues.get(0).getJson());
+		List<JacksonJsonData> rawValues = java.util.Objects.requireNonNull(object.rawValues);
+		assertEquals(1, rawValues.size());
+		assertEquals(nestedJson, rawValues.get(0).getJson());
 
 	}
 	private static class SimpleObject {
 		@JsonRawValue
 		@JsonDeserialize(using = RawDeserializer.class)
 		@JsonProperty("value")
-		private String rawValue;
+		private @Nullable String rawValue;
 	}
 	private static class SimpleArrayObject {
 		@JsonProperty("value")
-		private List<JacksonJsonData> rawValues;
+		private @Nullable List<JacksonJsonData> rawValues;
 	}
 }

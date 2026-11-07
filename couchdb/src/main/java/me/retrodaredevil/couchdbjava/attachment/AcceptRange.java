@@ -2,10 +2,11 @@ package me.retrodaredevil.couchdbjava.attachment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public enum AcceptRange {
 	BYTES("bytes"),
 	NONE("none"),
@@ -17,7 +18,7 @@ public enum AcceptRange {
 		this.name = name;
 	}
 	@JsonCreator
-	public static AcceptRange createFromValue(@NotNull String name) {
+	public static AcceptRange createFromValue(String name) {
 		requireNonNull(name);
 		if ("bytes".equals(name)) {
 			return BYTES;

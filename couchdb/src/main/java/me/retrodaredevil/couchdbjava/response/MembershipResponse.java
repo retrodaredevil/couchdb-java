@@ -3,6 +3,7 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.List;
  * @see <a href=https://docs.couchdb.org/en/stable/api/server/common.html#membership">docs.couchdb.org/en/stable/api/server/common.html#membership</a>
  */
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
+@NullMarked
 public class MembershipResponse {
 	private final List<String> allNodes;
 	private final List<String> clusterNodes;

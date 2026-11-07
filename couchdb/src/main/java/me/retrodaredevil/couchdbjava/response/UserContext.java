@@ -2,12 +2,14 @@ package me.retrodaredevil.couchdbjava.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@NullMarked
 public class UserContext {
 	private final @Nullable String name;
 	private final List<String> roles;
@@ -17,11 +19,11 @@ public class UserContext {
 			@JsonProperty(value = "name", required = true) @Nullable String name,
 			@JsonProperty(value = "roles", required = true) List<String> roles) {
 		this.name = name;
-		requireNonNull(this.roles = roles);
+		this.roles = requireNonNull(roles);
 	}
 
 	@JsonProperty("name")
-	public String getName() {
+	public @Nullable String getName() {
 		return name;
 	}
 

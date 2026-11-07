@@ -18,14 +18,17 @@ buildscript {
 
 plugins {
     id "com.avast.gradle.docker-compose" version "$dockerComposePluginVersion"
+    id "net.ltgt.errorprone" version "5.1.1" apply false
 }
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'net.ltgt.errorprone'
     apply plugin: 'maven-publish' // necessary for jitpack
     apply plugin: 'docker-compose'
 
     java {
+        toolchain { languageVersion = JavaLanguageVersion.of(25) }
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
@@ -38,7 +41,92 @@ subprojects {
         testImplementation "org.junit.platform:junit-platform-commons:$junit5PlatformVersion"
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: junit5Version
 
-        implementation 'org.jetbrains:annotations:21.0.1' // https://search.maven.org/search?q=g:org.jetbrains%20AND%20a:annotations
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junit5PlatformVersion"
+
+        api 'org.jspecify:jspecify:1.0.1'
+        errorprone 'com.google.errorprone:error_prone_core:2.50.0'
+        errorprone 'com.uber.nullaway:nullaway:0.14.2'
+        compileOnly 'com.google.errorprone:error_prone_annotations:2.50.0'
+    }
+    tasks.withType(JavaCompile).configureEach {
+        options.errorprone {
+            disableWarningsInGeneratedCode = true
+            excludedPaths = '.*/build/generated.*/.*'
+            error('NullAway')
+            option('NullAway:OnlyNullMarked', 'true')
+            option('NullAway:JSpecifyMode', 'true')
+            option('NullAway:AcknowledgeRestrictiveAnnotations', 'true')
+            error('RequireExplicitNullMarking')
+            warn('AnnotationPosition')
+
+            disable('MissingSummary')
+            disable('StringSplitter')
+            disable('EqualsGetClass')
+            disable('InvalidLink')
+            disable('ComparableType')
+            disable('DoNotClaimAnnotations')
+            disable('InlineMeSuggester')
+            disable('EmptyCatch')
+            disable('FutureReturnValueIgnored')
+            disable('UnusedVariable')
+            disable('CanonicalDuration')
+            disable('EffectivelyPrivate')
+
+            error('MissingOverride')
+            error('AssignmentExpression')
+            error('NullableOnContainingClass')
+            warn('UnusedMethod')
+            error('StatementSwitchToExpressionSwitch')
+            error('PatternMatchingInstanceof')
+
+            enable('ClassName')
+            warn('DepAnn')
+            warn('EmptyIf')
+            warn('InsecureCryptoUsage')
+            warn('ConstantPatternCompile')
+            warn('DifferentNameButSame')
+            error('EqualsBrokenForNull')
+            warn('InconsistentOverloads')
+            warn('InitializeInline')
+            warn('InterfaceWithOnlyStatics')
+            warn('InterruptedExceptionSwallowed')
+            warn('Interruption')
+            warn('NonCanonicalStaticMemberImport')
+            warn('RedundantOverride')
+            warn('RedundantThrows')
+            warn('TransientMisuse')
+            warn('TryWithResourcesVariable')
+            warn('UnnecessarilyFullyQualified')
+            warn('UnnecessaryAnonymousClass')
+            warn('UnusedException')
+
+            error('FieldMissingNullable')
+            error('ParameterMissingNullable')
+            error('ReturnMissingNullable')
+
+            warn('ConstantField')
+            warn('FieldCanBeLocal')
+            warn('FieldCanBeStatic')
+            warn('ForEachIterable')
+            warn('LambdaFunctionalInterface')
+            if (!name.toLowerCase().contains('test')) {
+                warn('MethodCanBeStatic')
+            }
+            error('MixedArrayDimensions')
+            error('MultipleTopLevelClasses')
+            error('PackageLocation')
+            error('PrivateConstructorForUtilityClass')
+            warn('RemoveUnusedImports')
+            error('ReturnsNullCollection')
+            error('SwitchDefault')
+            error('SymbolToString')
+            warn('ThrowsUncheckedException')
+            warn('TryFailRefactoring')
+            error('TypeToString')
+            warn('UnnecessaryBoxedAssignment')
+            warn('UnnecessaryBoxedVariable')
+            error('UnnecessaryStaticImport')
+        }
     }
     test {
         useJUnitPlatform {

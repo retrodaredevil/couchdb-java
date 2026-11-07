@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.retrodaredevil.couchdbjava.replicator.source.ReplicatorSource;
 import me.retrodaredevil.couchdbjava.replicator.source.StringReplicatorSource;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.time.Duration;
@@ -28,42 +30,43 @@ import static java.util.Objects.requireNonNull;
 		creatorVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
+@NullMarked
 public class SimpleReplicatorDocument implements ReplicatorDocument {
 	@JsonProperty("source")
 	private final ReplicatorSource source;
 	@JsonProperty("target")
 	private final ReplicatorSource target;
 	@JsonProperty("cancel")
-	private final Boolean cancel;
+	private final @Nullable Boolean cancel;
 	@JsonProperty("checkpoint_interval")
-	private final Long checkpointIntervalMillis;
+	private final @Nullable Long checkpointIntervalMillis;
 	@JsonProperty("continuous")
-	private final Boolean continuous;
+	private final @Nullable Boolean continuous;
 	@JsonProperty("create_target")
-	private final Boolean createTarget;
+	private final @Nullable Boolean createTarget;
 	@JsonProperty("doc_ids")
-	private final List<String> documentIds;
+	private final @Nullable List<String> documentIds;
 	@JsonProperty("filter")
-	private final String filterFunctionName;
+	private final @Nullable String filterFunctionName;
 	@JsonProperty("source_proxy")
-	private final ReplicatorSource sourceProxy;
+	private final @Nullable ReplicatorSource sourceProxy;
 	@JsonProperty("target_proxy")
-	private final ReplicatorSource targetProxy;
+	private final @Nullable ReplicatorSource targetProxy;
 	@JsonProperty("query_params")
-	private final Map<String, Object> queryParameters;
+	private final @Nullable Map<String, Object> queryParameters;
 	@JsonProperty("selector")
-	private final Object selector; // TODO figure out what type this is supposed to be
+	private final @Nullable Object selector; // TODO figure out what type this is supposed to be
 	@JsonProperty("since_seq")
-	private final String sinceSequence;
+	private final @Nullable String sinceSequence;
 	@JsonProperty("use_checkpoints")
-	private final Boolean useCheckpoints;
+	private final @Nullable Boolean useCheckpoints;
 	@JsonProperty("winning_revs_only")
-	private final Boolean winningRevisionsOnly;
+	private final @Nullable Boolean winningRevisionsOnly;
 	@JsonProperty("use_bulk_get")
-	private final Boolean useBulkGet;
+	private final @Nullable Boolean useBulkGet;
 
 	@JsonProperty("create_target_params")
-	private final Object createTargetParameters;
+	private final @Nullable Object createTargetParameters;
 
 	// note there are some other fields automatically added to the replicator document
 	//   These fields include: owner (string), _replication_state (string), _replication_state_time (string ISO formatted like Instant), _replication_stats (object)
@@ -73,21 +76,21 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 	public SimpleReplicatorDocument(
 			@JsonProperty(value = "source", required = true) ReplicatorSource source,
 			@JsonProperty(value = "target", required = true) ReplicatorSource target,
-			@JsonProperty("cancel") Boolean cancel,
-			@JsonProperty("checkpoint_interval") Long checkpointIntervalMillis,
-			@JsonProperty("continuous") Boolean continuous,
-			@JsonProperty("create_target") Boolean createTarget,
-			@JsonProperty("doc_ids") List<String> documentIds,
-			@JsonProperty("filter") String filterFunctionName,
-			@JsonProperty("source_proxy") ReplicatorSource sourceProxy,
-			@JsonProperty("target_proxy") ReplicatorSource targetProxy,
-			@JsonProperty("query_params") Map<String, Object> queryParameters,
-			@JsonProperty("selector") Object selector,
-			@JsonProperty("since_seq") String sinceSequence,
-			@JsonProperty("use_checkpoints") Boolean useCheckpoints,
-			@JsonProperty("winning_revs_only") Boolean winningRevisionsOnly,
-			@JsonProperty("use_bulk_get") Boolean useBulkGet,
-			@JsonProperty("create_target_params") Object createTargetParameters) {
+			@JsonProperty("cancel") @Nullable Boolean cancel,
+			@JsonProperty("checkpoint_interval") @Nullable Long checkpointIntervalMillis,
+			@JsonProperty("continuous") @Nullable Boolean continuous,
+			@JsonProperty("create_target") @Nullable Boolean createTarget,
+			@JsonProperty("doc_ids") @Nullable List<String> documentIds,
+			@JsonProperty("filter") @Nullable String filterFunctionName,
+			@JsonProperty("source_proxy") @Nullable ReplicatorSource sourceProxy,
+			@JsonProperty("target_proxy") @Nullable ReplicatorSource targetProxy,
+			@JsonProperty("query_params") @Nullable Map<String, Object> queryParameters,
+			@JsonProperty("selector") @Nullable Object selector,
+			@JsonProperty("since_seq") @Nullable String sinceSequence,
+			@JsonProperty("use_checkpoints") @Nullable Boolean useCheckpoints,
+			@JsonProperty("winning_revs_only") @Nullable Boolean winningRevisionsOnly,
+			@JsonProperty("use_bulk_get") @Nullable Boolean useBulkGet,
+			@JsonProperty("create_target_params") @Nullable Object createTargetParameters) {
 		this.source = requireNonNull(source);
 		this.target = requireNonNull(target);
 		this.cancel = cancel;
@@ -107,7 +110,6 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 		this.createTargetParameters = createTargetParameters;
 	}
 
-
 	@Override
 	public ReplicatorSource getSource() {
 		return source;
@@ -124,7 +126,7 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 	}
 
 	@Override
-	public Long getCheckpointIntervalMillis() {
+	public @Nullable Long getCheckpointIntervalMillis() {
 		return checkpointIntervalMillis;
 	}
 
@@ -144,32 +146,32 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 	}
 
 	@Override
-	public String getFilterFunctionName() {
+	public @Nullable String getFilterFunctionName() {
 		return filterFunctionName;
 	}
 
 	@Override
-	public ReplicatorSource getSourceProxy() {
+	public @Nullable ReplicatorSource getSourceProxy() {
 		return sourceProxy;
 	}
 
 	@Override
-	public ReplicatorSource getTargetProxy() {
+	public @Nullable ReplicatorSource getTargetProxy() {
 		return targetProxy;
 	}
 
 	@Override
-	public Map<String, Object> getQueryParameters() {
+	public @Nullable Map<String, Object> getQueryParameters() {
 		return queryParameters;
 	}
 
 	@Override
-	public Object getSelector() {
+	public @Nullable Object getSelector() {
 		return selector;
 	}
 
 	@Override
-	public String getSinceSequence() {
+	public @Nullable String getSinceSequence() {
 		return sinceSequence;
 	}
 
@@ -189,7 +191,7 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 	}
 
 	@Override
-	public Object getCreateTargetParameters() {
+	public @Nullable Object getCreateTargetParameters() {
 		return createTargetParameters;
 	}
 
@@ -198,7 +200,7 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		SimpleReplicatorDocument that = (SimpleReplicatorDocument) o;
@@ -214,21 +216,21 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 	public static final class Builder {
 		private final ReplicatorSource source;
 		private final ReplicatorSource target;
-		private Boolean cancel;
-		private Long checkpointIntervalMillis;
-		private Boolean continuous;
-		private Boolean createTarget;
-		private List<String> documentIds;
-		private String filterFunctionName;
-		private ReplicatorSource sourceProxy;
-		private ReplicatorSource targetProxy;
-		private Map<String, Object> queryParameters;
-		private Object selector;
-		private String sinceSequence;
-		private Boolean useCheckpoints;
-		private Boolean winningRevisionsOnly;
-		private Boolean useBulkGet;
-		private Object createTargetParameters;
+		private @Nullable Boolean cancel;
+		private @Nullable Long checkpointIntervalMillis;
+		private @Nullable Boolean continuous;
+		private @Nullable Boolean createTarget;
+		private @Nullable List<String> documentIds;
+		private @Nullable String filterFunctionName;
+		private @Nullable ReplicatorSource sourceProxy;
+		private @Nullable ReplicatorSource targetProxy;
+		private @Nullable Map<String, Object> queryParameters;
+		private @Nullable Object selector;
+		private @Nullable String sinceSequence;
+		private @Nullable Boolean useCheckpoints;
+		private @Nullable Boolean winningRevisionsOnly;
+		private @Nullable Boolean useBulkGet;
+		private @Nullable Object createTargetParameters;
 
 		private Builder(ReplicatorSource source, ReplicatorSource target) {
 			this.source = requireNonNull(source);
@@ -254,11 +256,11 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 			createTarget = true;
 			return this;
 		}
-		public Builder documentIds(List<String> documentIds) {
+		public Builder documentIds(@Nullable List<String> documentIds) {
 			this.documentIds = documentIds;
 			return this;
 		}
-		public Builder filter(String filterFunctionName) {
+		public Builder filter(@Nullable String filterFunctionName) {
 			this.filterFunctionName = filterFunctionName;
 			return this;
 		}
@@ -270,15 +272,15 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 			this.targetProxy = new StringReplicatorSource(targetProxy);
 			return this;
 		}
-		public Builder queryParameters(Map<String, Object> queryParameters) {
+		public Builder queryParameters(@Nullable Map<String, Object> queryParameters) {
 			this.queryParameters = queryParameters;
 			return this;
 		}
-		public Builder selector(Object selector) {
+		public Builder selector(@Nullable Object selector) {
 			this.selector = selector;
 			return this;
 		}
-		public Builder sinceSequence(String sinceSequence) {
+		public Builder sinceSequence(@Nullable String sinceSequence) {
 			this.sinceSequence = sinceSequence;
 			return this;
 		}
@@ -294,7 +296,7 @@ public class SimpleReplicatorDocument implements ReplicatorDocument {
 			this.useBulkGet = true;
 			return this;
 		}
-		public Builder createTargetParameters(Object createTargetParameters) {
+		public Builder createTargetParameters(@Nullable Object createTargetParameters) {
 			this.createTargetParameters = createTargetParameters;
 			return this;
 		}

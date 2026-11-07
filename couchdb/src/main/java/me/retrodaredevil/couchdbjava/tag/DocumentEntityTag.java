@@ -2,6 +2,8 @@ package me.retrodaredevil.couchdbjava.tag;
 
 import me.retrodaredevil.couchdbjava.CouchDbUtil;
 import okhttp3.Response;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -10,6 +12,7 @@ import java.util.Objects;
  * Do not use this class to represent general ETag values as
  * validation may be applied to values inside this class specific to <b>documents</b> in a CouchDB-like database.
  */
+@NullMarked
 public final class DocumentEntityTag {
 	private final String rawValue;
 	private final boolean weak;
@@ -52,7 +55,7 @@ public final class DocumentEntityTag {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		DocumentEntityTag entityTag = (DocumentEntityTag) o;

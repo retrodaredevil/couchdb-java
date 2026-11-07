@@ -3,6 +3,7 @@ package me.retrodaredevil.couchdbjava.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import me.retrodaredevil.couchdbjava.tag.DocumentEntityTag;
+import org.jspecify.annotations.NullMarked;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,6 +11,7 @@ import static java.util.Objects.requireNonNull;
  * Represents the body of a document response along with other values (such as header values)
  * that we (retrodaredevil, couchdb-java author) deemed worthy of exposing as a public API.
  */
+@NullMarked
 public class DocumentResponse {
 	private final String id;
 	private final boolean ok;
