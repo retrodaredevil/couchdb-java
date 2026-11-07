@@ -132,7 +132,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 		 */
 		public Builder addAuthObject(CouchDbAuth auth) {
 			if (auth.usesAuth()) {
-				this.auth = new RawAuth(new RawAuthBasic(requireNonNull(auth.getUsername()), requireNonNull(auth.getPassword())));
+				this.auth = new RawAuth(new RawAuthBasic(auth.expectUsername(), auth.expectPassword()));
 			} else {
 				this.auth = null;
 			}

@@ -60,8 +60,6 @@ subprojects {
         testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
 
         api 'org.jspecify:jspecify:1.0.1'
-        // Checker Framework 4 requires Java 11; these annotations are part of our Java 8 API.
-        api 'org.checkerframework:checker-qual:3.55.1'
         errorprone 'com.google.errorprone:error_prone_core:2.50.0'
         errorprone 'com.uber.nullaway:nullaway:0.14.2'
         compileOnly 'com.google.errorprone:error_prone_annotations:2.50.0'
