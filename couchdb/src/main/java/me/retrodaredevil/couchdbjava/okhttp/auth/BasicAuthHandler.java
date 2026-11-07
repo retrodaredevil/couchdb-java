@@ -5,7 +5,6 @@ import me.retrodaredevil.couchdbjava.okhttp.OkHttpCouchDbInstance;
 import okhttp3.CookieJar;
 import okhttp3.Request;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public class BasicAuthHandler implements OkHttpAuthHandler {
@@ -16,7 +15,7 @@ public class BasicAuthHandler implements OkHttpAuthHandler {
 	}
 
 	@Override
-	public @Nullable CookieJar getCookieJar() {
+	public CookieJar getCookieJar() {
 		return CookieJar.NO_COOKIES;
 	}
 

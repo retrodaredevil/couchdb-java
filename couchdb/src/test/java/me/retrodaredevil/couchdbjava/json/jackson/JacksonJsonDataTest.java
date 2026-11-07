@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import org.junit.jupiter.api.Test;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +45,7 @@ class JacksonJsonDataTest {
 	private static class ExpectingNullWhenAbsent {
 
 		@JsonCreator
-		public ExpectingNullWhenAbsent(@JsonProperty("value") JsonData data) {
+		public ExpectingNullWhenAbsent(@JsonProperty("value") @Nullable JsonData data) {
 			assertNull(data);
 		}
 	}

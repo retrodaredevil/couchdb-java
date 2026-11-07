@@ -192,7 +192,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 		}
 
 		public CouchDbAuth toAuth() {
-			return CouchDbAuth.create(username == null ? "" : username, password == null ? "" : password);
+			return CouchDbAuth.create(username, password);
 		}
 
 		@Override

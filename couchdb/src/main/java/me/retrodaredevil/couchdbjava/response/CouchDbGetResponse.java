@@ -31,7 +31,7 @@ public class CouchDbGetResponse {
 			@JsonProperty(value = "version", required = true) String version,
 			@JsonProperty("git_sha") @Nullable String gitSha,
 			@JsonProperty(value = "uuid", required = true) String uuid,
-			@JsonProperty(value = "features") List<String> features,
+			@JsonProperty(value = "features") @Nullable List<String> features,
 			@JsonProperty(value = "vendor", required = true) Vendor vendor) {
 		this.couchDbMessage = couchDbMessage;
 		this.pouchDbMessage = pouchDbMessage;
@@ -53,7 +53,7 @@ public class CouchDbGetResponse {
 	}
 
 	@JsonProperty("version")
-	public @Nullable String getVersion() {
+	public String getVersion() {
 		return version;
 	}
 

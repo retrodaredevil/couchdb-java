@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @JsonAutoDetect(
 		getterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -13,18 +14,18 @@ import org.jspecify.annotations.NullMarked;
 )
 @NullMarked
 public class DatabaseSecurity {
-	private final SecurityGroup admins;
-	private final SecurityGroup members;
+	private final @Nullable SecurityGroup admins;
+	private final @Nullable SecurityGroup members;
 
 	@JsonCreator
-	public DatabaseSecurity(@JsonProperty("admins") SecurityGroup admins, @JsonProperty("members") SecurityGroup members) {
+	public DatabaseSecurity(@JsonProperty("admins") @Nullable SecurityGroup admins, @JsonProperty("members") @Nullable SecurityGroup members) {
 		this.admins = admins;
 		this.members = members;
 	}
 
 	@JsonProperty("admins")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public SecurityGroup getAdmins() {
+	public @Nullable SecurityGroup getAdmins() {
 		return admins;
 	}
 	public SecurityGroup getAdminsOrBlank() {

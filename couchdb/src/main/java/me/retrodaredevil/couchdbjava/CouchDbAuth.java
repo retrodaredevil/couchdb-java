@@ -1,6 +1,8 @@
 package me.retrodaredevil.couchdbjava;
 
 import com.fasterxml.jackson.core.Base64Variants;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
+import org.checkerframework.dataflow.qual.Pure;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -29,13 +31,16 @@ public class CouchDbAuth {
 	public static CouchDbAuth createNoAuth() {
 		return NO_AUTH;
 	}
+	@EnsuresNonNullIf(result = true, expression = {"getUsername()", "getPassword()"})
 	public boolean usesAuth() {
-		return username != null;
+		return getUsername() != null && getPassword() != null;
 	}
 
+	@Pure
 	public @Nullable String getUsername() {
 		return username;
 	}
+	@Pure
 	public @Nullable String getPassword() {
 		return password;
 	}

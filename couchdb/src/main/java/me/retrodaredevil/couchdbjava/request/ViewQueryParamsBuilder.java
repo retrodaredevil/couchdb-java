@@ -98,6 +98,9 @@ public class ViewQueryParamsBuilder {
 	public ViewQueryParamsBuilder updateSequence(@Nullable Boolean updateSequence) { this.updateSequence = updateSequence; return this; }
 
 	// region endKey
+	public ViewQueryParamsBuilder endKeyNull() {
+		return endKeyJson(new StringJsonData("null"));
+	}
 	public ViewQueryParamsBuilder endKey(long endKey) {
 		return endKeyJson(numberToJson(endKey));
 	}
@@ -191,6 +194,9 @@ public class ViewQueryParamsBuilder {
 	public ViewQueryParamsBuilder keysJson(@Nullable List<JsonData> keysJsonList) { this.keysJsonList = keysJsonList; return this; }
 	// endregion
 	// region startKey
+	public ViewQueryParamsBuilder startKeyNull() {
+		return startKeyJson(new StringJsonData("null"));
+	}
 	public ViewQueryParamsBuilder startKey(long startKey) {
 		return startKeyJson(numberToJson(startKey));
 	}
@@ -216,6 +222,7 @@ public class ViewQueryParamsBuilder {
 	// endregion
 
 	private static JsonData stringToJson(String string) {
+		requireNonNull(string);
 		try {
 			return new StringJsonData(MAPPER.writeValueAsString(string));
 		} catch (JsonProcessingException e) {

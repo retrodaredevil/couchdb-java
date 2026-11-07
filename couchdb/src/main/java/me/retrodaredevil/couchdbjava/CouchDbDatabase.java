@@ -61,10 +61,10 @@ public interface CouchDbDatabase extends CouchDbShared {
 	default DocumentResponse updateDocument(String id, String revision, JsonData jsonData) throws CouchDbException {
 		return updateDocument(id, DocumentEntityTag.fromRevision(revision), jsonData, false);
 	}
-	default DocumentResponse updateDocument(String id, DocumentEntityTag eTag, JsonData jsonData) throws CouchDbException {
+	default DocumentResponse updateDocument(String id, @Nullable DocumentEntityTag eTag, JsonData jsonData) throws CouchDbException {
 		return updateDocument(id, eTag, jsonData, false);
 	}
-	DocumentResponse updateDocument(String id, DocumentEntityTag eTag, JsonData jsonData, boolean forceETagUse) throws CouchDbException;
+	DocumentResponse updateDocument(String id, @Nullable DocumentEntityTag eTag, JsonData jsonData, boolean forceETagUse) throws CouchDbException;
 
 	DocumentResponse deleteDocument(String id, String revision) throws CouchDbException;
 
@@ -80,7 +80,7 @@ public interface CouchDbDatabase extends CouchDbShared {
 	 * @throws me.retrodaredevil.couchdbjava.exception.CouchDbNotModifiedException Thrown if the specified document is still at the given revision
 	 * @throws CouchDbException May represent a connection error or that a document wasn't found, permission error, etc.
 	 */
-	default DocumentData getDocumentIfUpdated(String id, String revision) throws CouchDbException {
+	default DocumentData getDocumentIfUpdated(String id, @Nullable String revision) throws CouchDbException {
 		return getDocumentIfUpdated(id, revision == null ? null : DocumentEntityTag.fromRevision(revision));
 	}
 
