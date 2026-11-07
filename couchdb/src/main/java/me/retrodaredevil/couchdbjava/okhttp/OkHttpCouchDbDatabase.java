@@ -79,10 +79,6 @@ public class OkHttpCouchDbDatabase implements CouchDbDatabase {
 
 		rootShared = new OkHttpCouchDbShared("");
 	}
-	@Deprecated
-	private HttpUrl.Builder createUrlBuilder() {
-		return instance.createUrlBuilder().addPathSegment(name);
-	}
 
 	@Override
 	public String getName() {

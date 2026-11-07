@@ -151,7 +151,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 	}
 
 	@Override
-	public @Nullable CookieJar getCookieJar() {
+	public CookieJar getCookieJar() {
 		return cookieJar;
 	}
 

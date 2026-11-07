@@ -31,6 +31,9 @@ subprojects {
         targetCompatibility = 1.8
     }
     // The published library targets Java 8; tests use the build toolchain's JDK.
+    tasks.named('compileJava', JavaCompile) {
+        options.release = 8
+    }
     tasks.named('compileTestJava', JavaCompile) {
         sourceCompatibility = '25'
         targetCompatibility = '25'

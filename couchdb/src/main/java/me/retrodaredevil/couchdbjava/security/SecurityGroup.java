@@ -18,7 +18,7 @@ import java.util.List;
 )
 @NullMarked
 public class SecurityGroup {
-	public static SecurityGroup BLANK = new SecurityGroup(null, null);
+	public static final SecurityGroup BLANK = new SecurityGroup(null, null);
 
 	private final @Nullable List<String> names;
 	private final @Nullable List<String> roles;
