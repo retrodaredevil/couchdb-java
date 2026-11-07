@@ -15,9 +15,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
 
-    api "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-    api "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
-    api "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    // Jackson annotations use a minor-only version; the BOM aligns all three modules.
+    api platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion")
+    api "com.fasterxml.jackson.core:jackson-core"
+    api "com.fasterxml.jackson.core:jackson-annotations"
+    api "com.fasterxml.jackson.core:jackson-databind"
 
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
 //    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'

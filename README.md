@@ -38,7 +38,11 @@ dependencies {
 ```
 
 
-### Running Tests:
+### Development
+
+Development requires a Java 21 JDK, although the resulting artifact can run on Java versions as low as Java 8.
+
+#### Running Tests:
 Running test and building:
 ```shell
 ./gradlew build
