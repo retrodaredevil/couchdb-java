@@ -5,18 +5,18 @@ plugins {
 dependencies {
 
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-    api group: 'com.squareup.okhttp3', name: 'okhttp', version: "$okhttpVersion"
-    api "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    api "com.squareup.retrofit2:converter-jackson:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-jackson:$retrofitVersion"
-    api "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+    api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
+    api "com.squareup.retrofit2:retrofit:${rootProject.ext.retrofitVersion}"
+    api "com.squareup.retrofit2:converter-jackson:${rootProject.ext.retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-scalars:${rootProject.ext.retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-jackson:${rootProject.ext.retrofitVersion}"
+    api "com.squareup.okhttp3:logging-interceptor:${rootProject.ext.okhttpVersion}"
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    api group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    api "org.slf4j:slf4j-api:${rootProject.ext.slf4jVersion}"
 
     // Jackson annotations use a minor-only version; the BOM aligns all three modules.
-    api platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion")
+    api platform("com.fasterxml.jackson:jackson-bom:${rootProject.ext.jacksonVersion}")
     api "com.fasterxml.jackson.core:jackson-core"
     api "com.fasterxml.jackson.core:jackson-annotations"
     api "com.fasterxml.jackson.core:jackson-databind"

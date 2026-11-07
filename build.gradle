@@ -49,15 +49,15 @@ subprojects {
         }
     }
     repositories {
-        maven { url "https://repo.maven.apache.org/maven2" }
+        maven { url = "https://repo.maven.apache.org/maven2" }
     }
     dependencies {
-        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitVersion
-        testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
-        testImplementation "org.junit.platform:junit-platform-commons:$junitVersion"
-        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: junitVersion
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${rootProject.ext.junitVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:${rootProject.ext.junitVersion}"
+        testImplementation "org.junit.platform:junit-platform-commons:${rootProject.ext.junitVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter:${rootProject.ext.junitVersion}"
 
-        testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junitVersion"
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher:${rootProject.ext.junitVersion}"
 
         api 'org.jspecify:jspecify:1.0.1'
         errorprone 'com.google.errorprone:error_prone_core:2.52.0'
