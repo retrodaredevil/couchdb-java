@@ -35,7 +35,7 @@ import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Source;
 import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import me.retrodaredevil.couchdbjava.okhttp.util.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;

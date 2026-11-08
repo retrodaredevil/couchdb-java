@@ -1,8 +1,7 @@
 package me.retrodaredevil.couchdbjava.replicator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.replicator.source.StringReplicatorSource;
 import org.junit.jupiter.api.Test;
 import org.jspecify.annotations.NullMarked;
@@ -13,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReplicatorDocumentTest {
 
 	@Test
-	void test() throws JsonProcessingException {
+	void test() {
 		ReplicatorDocument document = SimpleReplicatorDocument.builder(
 				StringReplicatorSource.fromString("https://localhost:5984/a"),
 				StringReplicatorSource.fromString("https://localhost:5984/b")
@@ -27,8 +26,8 @@ class ReplicatorDocumentTest {
 		JsonNode tree = mapper.valueToTree(document);
 		assertTrue(tree.isObject());
 		assertEquals(3, tree.size());
-		assertEquals("https://localhost:5984/a", tree.get("source").asText());
-		assertEquals("https://localhost:5984/b", tree.get("target").asText());
+		assertEquals("https://localhost:5984/a", tree.get("source").asString());
+		assertEquals("https://localhost:5984/b", tree.get("target").asString());
 		assertTrue(tree.get("continuous").asBoolean());
 
 		ReplicatorDocument deserializedDocument = mapper.treeToValue(tree, ReplicatorDocument.class);

@@ -2,9 +2,8 @@ package me.retrodaredevil.couchdbjava;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import me.retrodaredevil.couchdbjava.json.jackson.JacksonJsonData;
 import me.retrodaredevil.couchdbjava.json.jackson.RawDeserializer;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @NullMarked
 public class RawDeserializeTest {
 	@Test
-	void testRaw() throws JsonProcessingException {
+	void testRaw() {
 		ObjectMapper mapper = new ObjectMapper();
 		String nestedJson = "{\"a\":5}";
 		String json = "{\"value\": " + nestedJson + "}";
@@ -26,7 +25,7 @@ public class RawDeserializeTest {
 		assertEquals(nestedJson, object.rawValue);
 	}
 	@Test
-	void testRawArray() throws JsonProcessingException {
+	void testRawArray() {
 		ObjectMapper mapper = new ObjectMapper();
 		String nestedJson = "{\"a\":5}";
 		String json = "{\"value\":[" + nestedJson + "]}";

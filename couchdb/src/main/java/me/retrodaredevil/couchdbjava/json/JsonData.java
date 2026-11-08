@@ -1,6 +1,6 @@
 package me.retrodaredevil.couchdbjava.json;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import me.retrodaredevil.couchdbjava.json.jackson.JacksonJsonData;
 import org.jspecify.annotations.NullMarked;
 

@@ -2,9 +2,8 @@ package me.retrodaredevil.couchdbjava.json.jackson;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import org.junit.jupiter.api.Test;
 import org.jspecify.annotations.NullMarked;
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class JacksonJsonDataTest {
 
 	@Test
-	void test() throws JsonProcessingException {
+	void test() {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = "{\"test\": 43}";
 		JacksonJsonData jsonData = (JacksonJsonData) mapper.readValue(jsonString, JsonData.class);
@@ -24,19 +23,19 @@ class JacksonJsonDataTest {
 		assertEquals(43, objectNode.get("test").asInt());
 	}
 	@Test
-	void testWithAbsent() throws JsonProcessingException {
+	void testWithAbsent() {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = "{}";
 		mapper.readValue(jsonString, ExpectingNullWhenAbsent.class);
 	}
 	@Test
-	void testWithNull() throws JsonProcessingException {
+	void testWithNull() {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = "{\"value\":null}";
 		mapper.readValue(jsonString, ExpectingJsonNullWhenNull.class);
 	}
 	@Test
-	void testWithEmptyString() throws JsonProcessingException {
+	void testWithEmptyString() {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = "{\"value\":\"\"}";
 		mapper.readValue(jsonString, ExpectingEmptyStringWhenEmptyString.class);

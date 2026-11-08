@@ -1,7 +1,6 @@
 package me.retrodaredevil.couchdbjava.integration.test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import me.retrodaredevil.couchdbjava.CouchDbConfig;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.CouchDbNode;
@@ -25,7 +24,7 @@ public class ConfigEndpointTest {
 
 	@ParameterizedTest
 	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
-	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException, InterruptedException {
+	void test(DatabaseService databaseService) throws CouchDbException, InterruptedException {
 		CouchDbInstance instance = TestUtil.createInstance(databaseService);
 		MembershipResponse membership = instance.membership();
 		// the configured CouchDB from the compose file is not clustered and even if it was it should only handle 1 node
@@ -47,7 +46,7 @@ public class ConfigEndpointTest {
 
 		if (databaseService == DatabaseService.COUCHDB) {
 			// only for CouchDB because PouchDB doesn't seem to return the old value like CouchDB does
-			assertEquals(configTree.get(httpSectionName).get("bind_address").asText(), config.putValue(httpSectionName, "bind_address", "0.0.0.0"));
+			assertEquals(configTree.get(httpSectionName).get("bind_address").asString(), config.putValue(httpSectionName, "bind_address", "0.0.0.0"));
 			assertEquals("0.0.0.0", config.queryValue(httpSectionName, "bind_address"));
 		}
 		assertEquals("", config.putValue("admins", "newadmin", "coolpass"));

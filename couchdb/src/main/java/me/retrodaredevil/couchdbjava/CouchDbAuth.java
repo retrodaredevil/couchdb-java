@@ -1,6 +1,6 @@
 package me.retrodaredevil.couchdbjava;
 
-import com.fasterxml.jackson.core.Base64Variants;
+import tools.jackson.core.Base64Variants;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 

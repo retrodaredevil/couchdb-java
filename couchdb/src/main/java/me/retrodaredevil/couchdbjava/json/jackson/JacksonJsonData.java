@@ -1,17 +1,14 @@
 package me.retrodaredevil.couchdbjava.json.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.NullNode;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.*;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.node.NullNode;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-
-import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -39,29 +36,27 @@ public class JacksonJsonData implements JsonData {
 		return true;
 	}
 
-	public static class Deserializer extends JsonDeserializer<JacksonJsonData> {
+	public static class Deserializer extends ValueDeserializer<JacksonJsonData> {
 		@Override
-		public JacksonJsonData deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-			JsonNode node = p.readValueAs(JsonNode.class);
+		public JacksonJsonData deserialize(JsonParser p, DeserializationContext ctxt) {
+			JsonNode node = ctxt.readValue(p, JsonNode.class);
 			return new JacksonJsonData(node);
 		}
 
 		@Override
-		public @Nullable Object getAbsentValue(DeserializationContext ctxt) throws JsonMappingException {
-			// Note that this method is not available for Jackson versions below 2.13, so using 2.13 is the only thing that makes the deserialization of this work as expected
+		public @Nullable Object getAbsentValue(DeserializationContext ctxt) {
 			return null;
 		}
 
 		@Override
-		public JacksonJsonData getNullValue(DeserializationContext ctxt) throws JsonMappingException {
+		public JacksonJsonData getNullValue(DeserializationContext ctxt) {
 			return JSON_NULL_DATA;
 		}
 	}
-	public static class Serializer extends JsonSerializer<JacksonJsonData> {
-		// NOTE: This does not seem to work (at least when used as `@Body JsonData data` in a retrofit service) TODO figure out why
+	public static class Serializer extends ValueSerializer<JacksonJsonData> {
 		@Override
-		public void serialize(JacksonJsonData value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-			gen.writeTree(value.node);
+		public void serialize(JacksonJsonData value, JsonGenerator gen, SerializationContext serializers) {
+			serializers.writeTree(gen, value.node);
 		}
 	}
 }

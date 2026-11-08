@@ -7,7 +7,7 @@ import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.response.CouchDbGetResponse;
 import okhttp3.HttpUrl;
 import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import me.retrodaredevil.couchdbjava.okhttp.util.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import org.jspecify.annotations.NullMarked;
 

@@ -1,14 +1,13 @@
 package me.retrodaredevil.couchdbjava.replicator.source;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.node.StringNode;
 import me.retrodaredevil.couchdbjava.CouchDbAuth;
 import org.jspecify.annotations.NullMarked;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
@@ -26,15 +25,15 @@ public interface ReplicatorSource {
 	 */
 	CouchDbAuth getAuth();
 
-	class Deserializer extends JsonDeserializer<ReplicatorSource> {
+	class Deserializer extends ValueDeserializer<ReplicatorSource> {
 
 		@Override
-		public ReplicatorSource deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+		public ReplicatorSource deserialize(JsonParser p, DeserializationContext ctxt) {
 			if (p.currentToken().isStructStart()) {
-				return p.readValueAs(ObjectReplicatorSource.class);
+				return ctxt.readValue(p, ObjectReplicatorSource.class);
 			}
-			TextNode node = p.readValueAs(TextNode.class);
-			return StringReplicatorSource.fromString(node.asText());
+			StringNode node = ctxt.readValue(p, StringNode.class);
+			return StringReplicatorSource.fromString(node.asString());
 		}
 	}
 }

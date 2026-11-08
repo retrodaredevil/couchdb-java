@@ -1,9 +1,8 @@
 package me.retrodaredevil.couchdbjava.json.jackson;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import org.jspecify.annotations.NullMarked;
 
@@ -13,16 +12,16 @@ public final class CouchDbJacksonUtil {
 
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
-	public static <T> T readValue(ObjectMapper objectMapper, JsonData jsonData, Class<T> clazz) throws JsonProcessingException {
+	public static <T> T readValue(ObjectMapper objectMapper, JsonData jsonData, Class<T> clazz) {
 		if (jsonData instanceof JacksonJsonData) {
 			return objectMapper.treeToValue(((JacksonJsonData) jsonData).getNode(), clazz);
 		}
 		return objectMapper.readValue(jsonData.getJson(), clazz);
 	}
-	public static <T> T readValue(ObjectMapper objectMapper, JsonData jsonData, TypeReference<T> typeReference) throws JsonProcessingException {
+	public static <T> T readValue(ObjectMapper objectMapper, JsonData jsonData, TypeReference<T> typeReference) {
 		return objectMapper.readValue(jsonData.getJson(), typeReference);
 	}
-	public static JsonNode getNodeFrom(JsonData jsonData) throws JsonProcessingException {
+	public static JsonNode getNodeFrom(JsonData jsonData) {
 		if (jsonData instanceof JacksonJsonData) {
 			return ((JacksonJsonData) jsonData).getNode();
 		}

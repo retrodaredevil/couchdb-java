@@ -1,7 +1,6 @@
 package me.retrodaredevil.couchdbjava.instance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.response.BulkGetResponse;
 import org.junit.jupiter.api.Test;
 import org.jspecify.annotations.NullMarked;
@@ -17,7 +16,7 @@ import static java.util.Objects.requireNonNull;
 @NullMarked
 public class SolarThingBulkGetTest {
 	@Test
-	void test() throws JsonProcessingException {
+	void test() {
 		for (String name : new String[] {
 				"bulk_get_data_2021-10-29.json",
 				"bulk_get_data_2021-10-30.json",

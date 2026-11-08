@@ -1,8 +1,7 @@
 package me.retrodaredevil.couchdbjava.integration.test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
@@ -31,7 +30,7 @@ public class IncludeDocsViewTest {
 
 	@ParameterizedTest
 	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
-	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException {
+	void test(DatabaseService databaseService) throws CouchDbException {
 		CouchDbInstance instance = TestUtil.createInstance(databaseService);
 		CouchDbDatabase database = instance.getDatabase(DATABASE);
 		database.create();
@@ -64,8 +63,8 @@ public class IncludeDocsViewTest {
 
 		JsonData doc = java.util.Objects.requireNonNull(entry.getDoc());
 		ObjectNode objectNode = (ObjectNode) CouchDbJacksonUtil.getNodeFrom(doc);
-		assertEquals(documentId, objectNode.get("_id").asText());
-		assertEquals(revision, objectNode.get("_rev").asText());
+		assertEquals(documentId, objectNode.get("_id").asString());
+		assertEquals(revision, objectNode.get("_rev").asString());
 		assertEquals(43, objectNode.get("test").asInt());
 
 		if (databaseService == DatabaseService.COUCHDB) {

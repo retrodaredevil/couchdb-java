@@ -1,6 +1,6 @@
 package me.retrodaredevil.couchdbjava.replicator;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import me.retrodaredevil.couchdbjava.replicator.source.ReplicatorSource;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;

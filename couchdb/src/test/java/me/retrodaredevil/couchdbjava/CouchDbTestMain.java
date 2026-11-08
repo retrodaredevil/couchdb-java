@@ -1,8 +1,8 @@
 package me.retrodaredevil.couchdbjava;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.SerializationFeature;
 import me.retrodaredevil.couchdbjava.exception.CouchDbCodeException;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.json.StringJsonData;
@@ -20,9 +20,9 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class CouchDbTestMain {
 	private CouchDbTestMain() {}
-	private static final ObjectMapper MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+	private static final ObjectMapper MAPPER = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
 
-	public static void main(String[] args) throws CouchDbException, JsonProcessingException {
+	public static void main(String[] args) throws CouchDbException {
 		try {
 			doMain();
 		} catch (CouchDbCodeException ex) {
@@ -30,7 +30,7 @@ public class CouchDbTestMain {
 			throw ex;
 		}
 	}
-	private static void doMain() throws CouchDbException, JsonProcessingException {
+	private static void doMain() throws CouchDbException {
 		CookieAuthHandler authHandler = new CookieAuthHandler("admin", "relax");
 		authHandler.setAutoAuth(false);
 

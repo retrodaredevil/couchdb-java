@@ -1,8 +1,7 @@
 package me.retrodaredevil.couchdbjava.okhttp.util;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.CouchDbStatusCode;
 import me.retrodaredevil.couchdbjava.exception.*;
 import me.retrodaredevil.couchdbjava.json.JsonData;
@@ -15,8 +14,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-
-import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -37,10 +34,8 @@ public final class OkHttpUtil {
 	public static <T> T parseResponseBodyJson(ResponseBody body, Class<T> clazz) throws CouchDbException {
 		try {
 			return MAPPER.readValue(body.byteStream(), clazz);
-		} catch (JsonMappingException | JsonParseException e) {
+		} catch (JacksonException e) {
 			throw new CouchDbException("Received bad json data!", e);
-		} catch (IOException e) {
-			throw new CouchDbException("Problem reading json data!", e);
 		}
 	}
 	public static @Nullable ErrorResponse parseErrorResponse(retrofit2.Response<?> response) {

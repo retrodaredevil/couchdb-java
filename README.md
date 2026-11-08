@@ -40,7 +40,9 @@ dependencies {
 
 ### Development
 
-Development requires a Java 21 JDK, although the resulting artifact can run on Java versions as low as Java 8.
+Development requires a Java 21 JDK, although the resulting artifact can run on Java 17+.
+
+1.x versions of CouchDB Java can run on Java 8, but may no longer be maintained.
 
 #### Running Tests:
 Running test and building:

@@ -1,7 +1,7 @@
 package me.retrodaredevil.couchdbjava;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.jackson.CouchDbJacksonUtil;
 import org.jspecify.annotations.NullMarked;
@@ -27,7 +27,7 @@ public final class CouchDbUtil {
 		final JsonNode jsonNode;
 		try {
 			jsonNode = CouchDbJacksonUtil.getNodeFrom(jsonData);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new IllegalArgumentException("Could not parse JSON data that the database gave us!", e);
 		}
 		if (!jsonNode.isObject()) {
@@ -37,10 +37,10 @@ public final class CouchDbUtil {
 		if (revisionNode == null) {
 			throw new IllegalArgumentException("_rev not present on returned data! jsonNode: " + jsonNode);
 		}
-		if (!revisionNode.isTextual()) {
+		if (!revisionNode.isString()) {
 			throw new IllegalArgumentException("_rev is not a string! revisionNow: " + revisionNode);
 		}
-		String revision = revisionNode.asText();
+		String revision = revisionNode.asString();
 		if (revision.length() < 34) { // revision should usually be exactly 34 characters, but we'll give it the benefit of the doubt
 			throw new IllegalArgumentException("_rev is not valid! responseRevision: " + revision);
 		}

@@ -1,7 +1,6 @@
 package me.retrodaredevil.couchdbjava.integration.test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
@@ -30,7 +29,7 @@ public class PartitionedDatabaseTest {
 	private static final String DATABASE = "test_partitioned_database";
 
 	@Test
-	void test() throws CouchDbException, JsonProcessingException {
+	void test() throws CouchDbException {
 		// partitioned databases not available on PouchDB, so only test on CouchDB
 		CouchDbInstance instance = TestUtil.createInstance(DatabaseService.COUCHDB);
 		CouchDbDatabase database = instance.getDatabase(DATABASE);

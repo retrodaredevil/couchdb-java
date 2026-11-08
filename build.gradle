@@ -6,7 +6,7 @@ buildscript {
 
         slf4jVersion = '2.0.20' // http://www.slf4j.org/download.html
         // https://github.com/FasterXML/jackson/wiki/Jackson-Releases
-        jacksonVersion = '2.22.4' // https://github.com/FasterXML/jackson-databind/releases
+        jacksonVersion = '3.2.4' // https://github.com/FasterXML/jackson-databind/releases
         // retrofit is why we need allow-opens. context: https://stackoverflow.com/questions/60915381/retrofit2-maven-project-illegal-reflective-access-warning // https://github.com/square/retrofit/issues/3341
         retrofitVersion = "3.0.0" // https://github.com/square/retrofit/releases
         okhttpVersion = "5.5.1" // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
@@ -27,12 +27,12 @@ subprojects {
 
     java {
         toolchain { languageVersion = JavaLanguageVersion.of(25) }
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = 17
+        targetCompatibility = 17
     }
-    // The published library targets Java 8; tests use the build toolchain's JDK.
+    // The published library targets Java 17; tests use the build toolchain's JDK.
     tasks.named('compileJava', JavaCompile) {
-        options.release = 8
+        options.release = 17
     }
     tasks.named('compileTestJava', JavaCompile) {
         sourceCompatibility = '25'
@@ -92,8 +92,8 @@ subprojects {
             error('AssignmentExpression')
             error('NullableOnContainingClass')
             warn('UnusedMethod')
-            error('StatementSwitchToExpressionSwitch')
-            error('PatternMatchingInstanceof')
+            warn('StatementSwitchToExpressionSwitch')
+            warn('PatternMatchingInstanceof')
 
             enable('ClassName')
             warn('DepAnn')
@@ -161,6 +161,8 @@ subprojects {
         }
     }
     tasks.register('integration', Test) {
+        testClassesDirs = sourceSets.test.output.classesDirs
+        classpath = sourceSets.test.runtimeClasspath
         useJUnitPlatform {
             includeTags 'integration'
         }

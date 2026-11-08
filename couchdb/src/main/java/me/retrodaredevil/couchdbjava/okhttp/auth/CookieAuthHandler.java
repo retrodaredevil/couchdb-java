@@ -1,7 +1,7 @@
 package me.retrodaredevil.couchdbjava.okhttp.auth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.exception.CouchDbException;
 import me.retrodaredevil.couchdbjava.okhttp.OkHttpCouchDbInstance;
 import me.retrodaredevil.couchdbjava.okhttp.util.OkHttpUtil;
@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -113,7 +112,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 		String jsonData;
 		try {
 			jsonData = MAPPER.writeValueAsString(map);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 		Request request = new Request.Builder()
@@ -141,7 +140,7 @@ public class CookieAuthHandler implements OkHttpAuthHandler {
 				SessionPostResponse sessionPostResponse;
 				try {
 					sessionPostResponse = MAPPER.readValue(requireNonNull(response.body()).byteStream(), SessionPostResponse.class);
-				} catch (IOException e) {
+				} catch (JacksonException e) {
 					throw new CouchDbException("Received bad json data!", e);
 				}
 				return sessionPostResponse;

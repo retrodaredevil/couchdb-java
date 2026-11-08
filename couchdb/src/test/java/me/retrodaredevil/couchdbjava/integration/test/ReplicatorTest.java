@@ -1,7 +1,6 @@
 package me.retrodaredevil.couchdbjava.integration.test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
@@ -34,7 +33,7 @@ public class ReplicatorTest {
 
 	@ParameterizedTest
 	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
-	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException, InterruptedException {
+	void test(DatabaseService databaseService) throws CouchDbException, InterruptedException {
 		CouchDbInstance instance = TestUtil.createInstance(databaseService);
 		CouchDbDatabase replicator = instance.getReplicatorDatabase();
 		CouchDbDatabase source = instance.getDatabase(SOURCE_DATABASE);

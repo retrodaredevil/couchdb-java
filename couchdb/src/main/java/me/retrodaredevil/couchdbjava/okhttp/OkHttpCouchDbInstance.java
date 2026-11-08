@@ -1,7 +1,7 @@
 package me.retrodaredevil.couchdbjava.okhttp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.ValueInstantiationException;
 import me.retrodaredevil.couchdbjava.CouchDbConfig;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
@@ -20,7 +20,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import me.retrodaredevil.couchdbjava.okhttp.util.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import org.jspecify.annotations.NullMarked;
 
@@ -146,7 +146,7 @@ public class OkHttpCouchDbInstance implements CouchDbInstance {
 			// This exception occurs when some RuntimeException is thrown upon the instantiation of an object.
 			//   The JSON is valid, but whatever creator was called deemed something invalid.
 			throw new CouchDbException("Internal deserialization error!", e);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			// Catch most Jackson related errors, and report "JSON processing error"
 			throw new CouchDbException("Internal JSON processing error!", e);
 		} catch (IOException e) {

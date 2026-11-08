@@ -1,8 +1,8 @@
 package me.retrodaredevil.couchdbjava.request;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.StringJsonData;
 import org.jspecify.annotations.NullMarked;
@@ -225,7 +225,7 @@ public class ViewQueryParamsBuilder {
 		requireNonNull(string);
 		try {
 			return new StringJsonData(MAPPER.writeValueAsString(string));
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -233,14 +233,14 @@ public class ViewQueryParamsBuilder {
 		requireNonNull(number);
 		try {
 			return new StringJsonData(MAPPER.writeValueAsString(number));
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	private static JsonData booleanToJson(boolean b) {
 		try {
 			return new StringJsonData(MAPPER.writeValueAsString(b));
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}

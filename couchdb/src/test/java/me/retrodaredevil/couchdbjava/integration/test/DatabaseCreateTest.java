@@ -1,8 +1,7 @@
 package me.retrodaredevil.couchdbjava.integration.test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 import me.retrodaredevil.couchdbjava.CouchDbDatabase;
 import me.retrodaredevil.couchdbjava.CouchDbInstance;
 import me.retrodaredevil.couchdbjava.TestConstants;
@@ -23,7 +22,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +45,7 @@ public class DatabaseCreateTest {
 
 	@ParameterizedTest
 	@MethodSource("me.retrodaredevil.couchdbjava.integration.DatabaseService#values")
-	void test(DatabaseService databaseService) throws CouchDbException, JsonProcessingException {
+	void test(DatabaseService databaseService) throws CouchDbException {
 		CouchDbInstance instance = TestUtil.createInstance(databaseService);
 		assertFalse(instance.getAllDatabaseNames().contains(DATABASE));
 		CouchDbDatabase database = instance.getDatabase(DATABASE);
@@ -63,12 +61,10 @@ public class DatabaseCreateTest {
 		JsonData jsonData = document.getJsonData();
 		JsonNode node = CouchDbJacksonUtil.getNodeFrom(jsonData);
 		ObjectNode objectNode = (ObjectNode) node;
-		@SuppressWarnings("NullableProblems")
-		Set<String> fieldNames = StreamSupport.stream(((Iterable<String>) (objectNode::fieldNames)).spliterator(), false)
-				.collect(Collectors.toSet());
+		Set<String> fieldNames = new HashSet<>(objectNode.propertyNames());
 		assertEquals(new HashSet<>(Arrays.asList("_id", "_rev", "test")), fieldNames);
 		assertEquals(43, objectNode.get("test").numberValue().intValue());
-		assertEquals(id, objectNode.get("_id").asText());
-		assertEquals(expectedRev, objectNode.get("_rev").asText());
+		assertEquals(id, objectNode.get("_id").asString());
+		assertEquals(expectedRev, objectNode.get("_rev").asString());
 	}
 }

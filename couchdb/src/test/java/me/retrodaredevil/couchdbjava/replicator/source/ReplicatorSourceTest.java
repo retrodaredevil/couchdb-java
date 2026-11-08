@@ -1,8 +1,7 @@
 package me.retrodaredevil.couchdbjava.replicator.source;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.jspecify.annotations.NullMarked;
 
@@ -15,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ReplicatorSourceTest {
 
 	@Test
-	void testStringReplicatorSource() throws JsonProcessingException {
+	void testStringReplicatorSource() {
 		ObjectMapper mapper = new ObjectMapper();
 		StringReplicatorSource source = new StringReplicatorSource(URI.create("https://github.com"));
 		JsonNode tree = mapper.valueToTree(source);
-		assertTrue(tree.isTextual());
-		assertEquals("https://github.com", tree.asText());
+		assertTrue(tree.isString());
+		assertEquals("https://github.com", tree.asString());
 
 		ReplicatorSource deserializedSource = mapper.treeToValue(tree, ReplicatorSource.class);
 		assertTrue(deserializedSource instanceof StringReplicatorSource);
@@ -28,7 +27,7 @@ class ReplicatorSourceTest {
 	}
 
 	@Test
-	void testObjectReplicatorSource() throws JsonProcessingException {
+	void testObjectReplicatorSource() {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectReplicatorSource source = new ObjectReplicatorSource(
 				URI.create("https://github.com"),
@@ -38,7 +37,7 @@ class ReplicatorSourceTest {
 		JsonNode tree = mapper.valueToTree(source);
 		assertTrue(tree.isObject());
 		assertEquals(1, tree.size()); // confirm that the null fields become undefined and are not serialized
-		assertEquals("https://github.com", tree.get("url").asText());
+		assertEquals("https://github.com", tree.get("url").asString());
 
 		ReplicatorSource deserializedSource = mapper.treeToValue(tree, ReplicatorSource.class);
 		assertTrue(deserializedSource instanceof ObjectReplicatorSource);
