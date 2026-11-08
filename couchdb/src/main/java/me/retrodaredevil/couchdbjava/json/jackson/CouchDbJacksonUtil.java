@@ -1,5 +1,6 @@
 package me.retrodaredevil.couchdbjava.json.jackson;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -12,15 +13,30 @@ public final class CouchDbJacksonUtil {
 
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
+	/**
+	 * Deserializes the JSON data into the requested type.
+	 *
+	 * @throws JacksonException if the JSON data cannot be parsed or converted to the requested type
+	 */
 	public static <T> T readValue(ObjectMapper objectMapper, JsonData jsonData, Class<T> clazz) {
 		if (jsonData instanceof JacksonJsonData) {
 			return objectMapper.treeToValue(((JacksonJsonData) jsonData).getNode(), clazz);
 		}
 		return objectMapper.readValue(jsonData.getJson(), clazz);
 	}
+	/**
+	 * Deserializes the JSON data into the requested type.
+	 *
+	 * @throws JacksonException if the JSON data cannot be parsed or converted to the requested type
+	 */
 	public static <T> T readValue(ObjectMapper objectMapper, JsonData jsonData, TypeReference<T> typeReference) {
 		return objectMapper.readValue(jsonData.getJson(), typeReference);
 	}
+	/**
+	 * Returns the JSON tree represented by the data.
+	 *
+	 * @throws JacksonException if the JSON data cannot be parsed
+	 */
 	public static JsonNode getNodeFrom(JsonData jsonData) {
 		if (jsonData instanceof JacksonJsonData) {
 			return ((JacksonJsonData) jsonData).getNode();
