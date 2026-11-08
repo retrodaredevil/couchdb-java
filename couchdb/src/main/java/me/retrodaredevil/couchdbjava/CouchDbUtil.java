@@ -6,8 +6,8 @@ import me.retrodaredevil.couchdbjava.json.JsonData;
 import me.retrodaredevil.couchdbjava.json.jackson.CouchDbJacksonUtil;
 import org.jspecify.annotations.NullMarked;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import static java.util.Objects.requireNonNull;
 
@@ -48,11 +48,7 @@ public final class CouchDbUtil {
 	}
 
 	private static String urlEncode(String id) {
-		try {
-			return URLEncoder.encode(id, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException("Could not encode: '" + id + "'.", e);
-		}
+		return URLEncoder.encode(id, StandardCharsets.UTF_8);
 	}
 	public static String encodeAttachmentName(String attachmentName) {
 		return urlEncode(attachmentName);

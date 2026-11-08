@@ -19,8 +19,8 @@ public final class CouchDbJacksonUtil {
 	 * @throws JacksonException if the JSON data cannot be parsed or converted to the requested type
 	 */
 	public static <T> T readValue(ObjectMapper objectMapper, JsonData jsonData, Class<T> clazz) {
-		if (jsonData instanceof JacksonJsonData) {
-			return objectMapper.treeToValue(((JacksonJsonData) jsonData).getNode(), clazz);
+		if (jsonData instanceof JacksonJsonData jacksonJsonData) {
+			return objectMapper.treeToValue(jacksonJsonData.getNode(), clazz);
 		}
 		return objectMapper.readValue(jsonData.getJson(), clazz);
 	}
@@ -38,8 +38,8 @@ public final class CouchDbJacksonUtil {
 	 * @throws JacksonException if the JSON data cannot be parsed
 	 */
 	public static JsonNode getNodeFrom(JsonData jsonData) {
-		if (jsonData instanceof JacksonJsonData) {
-			return ((JacksonJsonData) jsonData).getNode();
+		if (jsonData instanceof JacksonJsonData jacksonJsonData) {
+			return jacksonJsonData.getNode();
 		}
 		return MAPPER.readTree(jsonData.getJson());
 	}

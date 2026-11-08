@@ -166,7 +166,7 @@ public class ObjectReplicatorSource implements ReplicatorSource {
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(basic);
+			return Objects.hashCode(basic);
 		}
 	}
 	public static final class RawAuthBasic {

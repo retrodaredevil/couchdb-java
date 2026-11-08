@@ -37,8 +37,8 @@ public final class AttachmentData {
 	}
 
 	public InputStream getInputStream() {
-		if (dataSource instanceof BufferedSource) {
-			return ((BufferedSource) dataSource).inputStream();
+		if (dataSource instanceof BufferedSource bufferedSource) {
+			return bufferedSource.inputStream();
 		}
 		return Okio.buffer(dataSource).inputStream();
 	}

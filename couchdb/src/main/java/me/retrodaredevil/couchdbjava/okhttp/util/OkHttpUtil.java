@@ -75,20 +75,14 @@ public final class OkHttpUtil {
 		String rawETagValue = headers.get("ETag"); // This header sometimes included in PouchDB responses, but never in CouchDB responses
 		DocumentEntityTag eTag = rawETagValue == null ? null : DocumentEntityTag.parseETag(rawETagValue);
 		// https://docs.couchdb.org/en/stable/api/basics.html#http-status-codes
-		switch(code) {
-			case CouchDbStatusCode.NOT_MODIFIED:
-				return new CouchDbNotModifiedException("Not modified!" + additionalString, error);
-			case CouchDbStatusCode.UNAUTHORIZED:
-				return new CouchDbUnauthorizedException("You are unauthorized!" + additionalString, error);
-			case CouchDbStatusCode.NOT_FOUND:
-				return new CouchDbNotFoundException("Got 'not found'!" + additionalString, error);
-			case CouchDbStatusCode.UPDATE_CONFLICT:
-				return new CouchDbUpdateConflictException("Update conflict!" + additionalString, error, eTag);
-			case CouchDbStatusCode.BAD_REQUEST:
-				return new CouchDbBadRequestException("Bad request!" + additionalString, error);
-			case CouchDbStatusCode.INTERNAL_SERVER_ERROR:
-				return new CouchDbInternalServerErrorException("Internal server error!" + additionalString, error);
-		}
-		return new CouchDbCodeException("Unknown status code! code: " + code + additionalString, code, error);
+		return switch (code) {
+			case CouchDbStatusCode.NOT_MODIFIED -> new CouchDbNotModifiedException("Not modified!" + additionalString, error);
+			case CouchDbStatusCode.UNAUTHORIZED -> new CouchDbUnauthorizedException("You are unauthorized!" + additionalString, error);
+			case CouchDbStatusCode.NOT_FOUND -> new CouchDbNotFoundException("Got 'not found'!" + additionalString, error);
+			case CouchDbStatusCode.UPDATE_CONFLICT -> new CouchDbUpdateConflictException("Update conflict!" + additionalString, error, eTag);
+			case CouchDbStatusCode.BAD_REQUEST -> new CouchDbBadRequestException("Bad request!" + additionalString, error);
+			case CouchDbStatusCode.INTERNAL_SERVER_ERROR -> new CouchDbInternalServerErrorException("Internal server error!" + additionalString, error);
+			default -> new CouchDbCodeException("Unknown status code! code: " + code + additionalString, code, error);
+		};
 	}
 }
